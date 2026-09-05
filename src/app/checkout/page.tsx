@@ -873,14 +873,18 @@ function CheckoutContent() {
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="font-bold text-slate-800 dark:text-slate-200 block">
-                      Toolora 5-Tool Productivity Suite
+                      {chargeAmount === 100 ? 'Toolora 5-Tool Productivity Suite' : 'Support & Developer Tip Contribution'}
                     </span>
                     <span className="text-[11px] text-slate-400">
-                      {billingMode === 'one-time' ? 'Lifetime All-Access License' : 'Annual VIP Membership'}
+                      {chargeAmount === 100
+                        ? billingMode === 'one-time'
+                          ? 'Lifetime All-Access License'
+                          : 'Annual VIP Membership'
+                        : 'Custom Direct Support Contribution'}
                     </span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white text-sm">
-                    $100.00
+                  <span className="font-bold text-slate-900 dark:text-white text-sm font-mono">
+                    ${chargeAmount.toFixed(2)}
                   </span>
                 </div>
 
@@ -902,20 +906,29 @@ function CheckoutContent() {
 
               {/* Price Calculation Box */}
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2">
-                <div className="flex justify-between items-baseline">
-                  <span className="text-xs text-slate-500">Regular Price:</span>
-                  <span className="text-xs text-slate-400 line-through font-mono">$330.00</span>
-                </div>
-                <div className="flex justify-between items-baseline">
-                  <span className="text-xs font-bold text-emerald-600">Instant Discount (70% OFF):</span>
-                  <span className="text-xs font-bold text-emerald-600 font-mono">-$230.00</span>
-                </div>
+                {chargeAmount === 100 ? (
+                  <>
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-xs text-slate-500">Regular Price:</span>
+                      <span className="text-xs text-slate-400 line-through font-mono">$330.00</span>
+                    </div>
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-xs font-bold text-emerald-600">Instant Discount (70% OFF):</span>
+                      <span className="text-xs font-bold text-emerald-600 font-mono">-$230.00</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between items-baseline text-xs text-slate-500">
+                    <span>Direct Tip Contribution:</span>
+                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300">${chargeAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-2.5">
                   <span className="font-extrabold text-slate-900 dark:text-white text-sm">
                     Total Due Now:
                   </span>
                   <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
-                    $100.00 <span className="text-xs font-normal text-slate-400">USD</span>
+                    ${chargeAmount.toFixed(2)} <span className="text-xs font-normal text-slate-400">USD</span>
                   </span>
                 </div>
               </div>
