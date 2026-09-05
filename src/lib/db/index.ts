@@ -8,8 +8,13 @@ import {
   WebhookEventRecord,
 } from './schema';
 
+declare global {
+  var __toolora_db: DatabaseState | undefined;
+}
+
 const DB_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'toolora_store.json');
+const TMP_DB_FILE = path.join('/tmp', 'toolora_store.json');
 
 const INITIAL_STATE: DatabaseState = {
   orders: {},
@@ -18,35 +23,42 @@ const INITIAL_STATE: DatabaseState = {
   webhookEvents: {},
 };
 
-function ensureDbFile(): void {
-  if (!fs.existsSync(DB_DIR)) {
-    fs.mkdirSync(DB_DIR, { recursive: true });
+function getInMemoryDb(): DatabaseState {
+  if (!globalThis.__toolora_db) {
+    globalThis.__toolora_db = { ...INITIAL_STATE, orders: {}, customers: {}, paymentMethods: {}, webhookEvents: {} };
+    // Try to load initial data from file if present
+    try {
+      if (fs.existsSync(DB_FILE)) {
+        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        globalThis.__toolora_db = JSON.parse(raw);
+      } else if (fs.existsSync(TMP_DB_FILE)) {
+        const raw = fs.readFileSync(TMP_DB_FILE, 'utf-8');
+        globalThis.__toolora_db = JSON.parse(raw);
+      }
+    } catch (e) {
+      console.warn('[DB] Could not read disk cache, using fresh in-memory state.');
+    }
   }
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(INITIAL_STATE, null, 2), 'utf-8');
-  }
+  return globalThis.__toolora_db!;
 }
 
 export function getDb(): DatabaseState {
-  ensureDbFile();
-  try {
-    const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(raw) as DatabaseState;
-  } catch (err) {
-    console.error('Error reading database file, returning initial state:', err);
-    return INITIAL_STATE;
-  }
+  return getInMemoryDb();
 }
 
 export function saveDb(state: DatabaseState): void {
-  ensureDbFile();
+  globalThis.__toolora_db = state;
   try {
-    const tmpFile = `${DB_FILE}.tmp.${Date.now()}`;
-    fs.writeFileSync(tmpFile, JSON.stringify(state, null, 2), 'utf-8');
-    fs.renameSync(tmpFile, DB_FILE);
-  } catch (err) {
-    console.error('Error saving database state:', err);
-    throw err;
+    // Attempt saving to /tmp first on serverless or DB_DIR locally
+    const targetDir = process.env.VERCEL ? '/tmp' : DB_DIR;
+    const targetFile = process.env.VERCEL ? TMP_DB_FILE : DB_FILE;
+
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    fs.writeFileSync(targetFile, JSON.stringify(state, null, 2), 'utf-8');
+  } catch (err: any) {
+    console.warn('[DB] Read-only environment or file write ignored, state persisted in-memory:', err?.message || err);
   }
 }
 

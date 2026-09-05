@@ -494,13 +494,11 @@ function CheckoutContent() {
             </div>
 
             <div
-              onClick={() => {
-                if (step >= 2) handleProceedToPayment();
-              }}
+              onClick={() => handleProceedToPayment()}
               className={`p-2.5 rounded-xl cursor-pointer transition-all ${
                 step === 3
                   ? 'bg-indigo-600 text-white font-bold shadow-md'
-                  : 'text-slate-400'
+                  : 'text-slate-400 hover:text-slate-600'
               }`}
             >
               <div className="text-[10px] uppercase opacity-75">Step 3</div>
@@ -845,8 +843,16 @@ function CheckoutContent() {
                       </Elements>
                     )
                   ) : (
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-400">
-                      Could not load payment session. Please click Back and try again.
+                    <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 space-y-3">
+                      <p className="font-semibold">Could not load payment session gateway.</p>
+                      <button
+                        type="button"
+                        onClick={handleProceedToPayment}
+                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md cursor-pointer flex items-center gap-1.5"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Retry Payment Gateway Session</span>
+                      </button>
                     </div>
                   )}
 
