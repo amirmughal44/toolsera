@@ -201,7 +201,7 @@ export function Header() {
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl font-bold text-xs text-white bg-indigo-600 hover:bg-indigo-500 shadow-md"
                 >
                   <Sparkles className="w-4 h-4 text-amber-300" />
-                  <span>Get All-Access Pass ($100)</span>
+                  <span>Get All-Access Pass ($5)</span>
                 </Link>
               </div>
             )}

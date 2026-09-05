@@ -127,7 +127,7 @@ export function Hero() {
               className="w-full sm:w-auto px-7 py-3.5 rounded-xl font-semibold text-sm sm:text-base text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 shadow-sm transition-all flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4 text-indigo-500" />
-              <span>Get All Access — $100</span>
+              <span>Get All Access — $5</span>
             </Link>
           </div>
         </div>

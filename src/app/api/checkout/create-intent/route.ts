@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
     const body = await req.json();
     const {
-      amount = 100,
+      amount = 5,
       currency = 'usd',
       email = '',
       name = 'Valued Member',

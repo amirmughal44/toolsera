@@ -4,7 +4,7 @@ import { stripe } from '@/lib/stripe';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { amount = 100, currency = 'usd', email, name, billingMode = 'one-time' } = body;
+    const { amount = 5, currency = 'usd', email, name, billingMode = 'one-time' } = body;
 
     // If Stripe is not yet configured with a valid API key, return a mock success for local testing
     if (!stripe || !process.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY.includes('your_secret_key')) {

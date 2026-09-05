@@ -58,6 +58,7 @@ function StripePaymentForm({
   clientSecret,
   isDemo,
   billingMode,
+  chargeAmount,
   savePaymentMethod,
   onPaymentSuccess,
 }: {
@@ -65,6 +66,7 @@ function StripePaymentForm({
   clientSecret: string;
   isDemo: boolean;
   billingMode: 'one-time' | 'annual';
+  chargeAmount: number;
   savePaymentMethod: boolean;
   onPaymentSuccess: (orderId: string) => void;
 }) {
@@ -233,7 +235,7 @@ function StripePaymentForm({
             <>
               <ShieldCheck className="w-5 h-5" />
               <span>
-                Pay $100.00 & Activate All-Access
+                Pay ${chargeAmount.toFixed(2)} & Activate All-Access
               </span>
             </>
           )}
@@ -254,7 +256,7 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const initialBilling = (searchParams.get('billing') as 'one-time' | 'annual') || 'one-time';
   const amountParam = parseFloat(searchParams.get('amount') || '');
-  const initialAmount = !isNaN(amountParam) && amountParam > 0 ? amountParam : 100;
+  const initialAmount = !isNaN(amountParam) && amountParam > 0 ? amountParam : 5;
   const router = useRouter();
 
   const [step, setStep] = useState<number>(1);
@@ -502,7 +504,7 @@ function CheckoutContent() {
               }`}
             >
               <div className="text-[10px] uppercase opacity-75">Step 3</div>
-              <div className="text-xs truncate">3. Express Payment ($100)</div>
+              <div className="text-xs truncate">3. Express Payment (${chargeAmount.toFixed(2)})</div>
             </div>
 
             <div className="hidden sm:block p-2.5 rounded-xl text-slate-400 opacity-50 select-none">
@@ -517,14 +519,14 @@ function CheckoutContent() {
           
           {/* Left Column: Interactive Form Steps (8 Cols on Desktop) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-8">
+            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-8">
               
               {/* Step 1: Plan Selection */}
               {step === 1 && (
                 <div className="space-y-6">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
                         <span>Select License Plan</span>
                         <Sparkles className="w-5 h-5 text-amber-500" />
                       </h2>
@@ -533,21 +535,24 @@ function CheckoutContent() {
                       </p>
                     </div>
                     <span className="px-3 py-1 rounded-full text-[11px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20">
-                      70% Instant Discount
+                      80% Instant Discount
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div
-                      onClick={() => setBillingMode('one-time')}
+                      onClick={() => {
+                        setBillingMode('one-time');
+                        setChargeAmount(5);
+                      }}
                       className={`p-6 rounded-2xl border-2 cursor-pointer transition-all space-y-3 ${
                         billingMode === 'one-time'
-                          ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 shadow-md ring-2 ring-indigo-600/20'
-                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                          ? 'border-indigo-600 bg-indigo-50/50 shadow-md ring-2 ring-indigo-600/20'
+                          : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-extrabold text-sm text-slate-900 dark:text-white">
+                        <span className="font-extrabold text-sm text-slate-900">
                           One-Time Payment
                         </span>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded">
@@ -555,15 +560,15 @@ function CheckoutContent() {
                         </span>
                       </div>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-3xl sm:text-4xl font-black text-indigo-600 dark:text-indigo-400">
-                          $100
+                        <span className="text-3xl sm:text-4xl font-black text-indigo-600">
+                          $5
                         </span>
                         <span className="text-xs text-slate-400 font-normal">.00 USD</span>
                       </div>
                       <p className="text-xs text-slate-500 leading-relaxed">
                         Single upfront payment. Zero recurring fees. Lifetime access to all tools.
                       </p>
-                      <ul className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300">
+                      <ul className="space-y-1.5 pt-2 border-t border-slate-200 text-[11px] text-slate-600">
                         <li className="flex items-center gap-1.5">
                           <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                           <span>All 5 Productivity Tools</span>
@@ -576,15 +581,18 @@ function CheckoutContent() {
                     </div>
 
                     <div
-                      onClick={() => setBillingMode('annual')}
+                      onClick={() => {
+                        setBillingMode('annual');
+                        setChargeAmount(5);
+                      }}
                       className={`p-6 rounded-2xl border-2 cursor-pointer transition-all space-y-3 ${
                         billingMode === 'annual'
-                          ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/40 shadow-md ring-2 ring-indigo-600/20'
-                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                          ? 'border-indigo-600 bg-indigo-50/50 shadow-md ring-2 ring-indigo-600/20'
+                          : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex justify-between items-center">
-                        <span className="font-extrabold text-sm text-slate-900 dark:text-white">
+                        <span className="font-extrabold text-sm text-slate-900">
                           Annual Membership
                         </span>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-500/10 px-2 py-0.5 rounded">
@@ -592,15 +600,15 @@ function CheckoutContent() {
                         </span>
                       </div>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-3xl sm:text-4xl font-black text-indigo-600 dark:text-indigo-400">
-                          $100
+                        <span className="text-3xl sm:text-4xl font-black text-indigo-600">
+                          $5
                         </span>
                         <span className="text-xs text-slate-400 font-normal">/year</span>
                       </div>
                       <p className="text-xs text-slate-500 leading-relaxed">
                         Yearly renewal with VIP cloud updates and priority server access.
                       </p>
-                      <ul className="space-y-1.5 pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300">
+                      <ul className="space-y-1.5 pt-2 border-t border-slate-200 text-[11px] text-slate-600">
                         <li className="flex items-center gap-1.5">
                           <Check className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                           <span>Priority Processing Speed</span>
@@ -630,7 +638,7 @@ function CheckoutContent() {
               {step === 2 && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-slate-900">
                       Customer & Billing Information
                     </h2>
                     <p className="text-xs text-slate-500 mt-1">
@@ -646,7 +654,7 @@ function CheckoutContent() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-indigo-500"
                       />
                     </div>
 
@@ -659,7 +667,7 @@ function CheckoutContent() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-indigo-500"
                       />
                     </div>
 
@@ -669,7 +677,7 @@ function CheckoutContent() {
                         type="text"
                         value={country}
                         onChange={(e) => setCountry(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-indigo-500"
                       />
                     </div>
 
@@ -679,7 +687,7 @@ function CheckoutContent() {
                         type="text"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-indigo-500"
                       />
                     </div>
 
@@ -689,7 +697,7 @@ function CheckoutContent() {
                         type="text"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm outline-none focus:border-indigo-500"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-indigo-500"
                       />
                     </div>
                   </div>
@@ -704,7 +712,7 @@ function CheckoutContent() {
                     />
                     <label
                       htmlFor="savePaymentMethod"
-                      className="text-xs text-slate-600 dark:text-slate-300 select-none cursor-pointer"
+                      className="text-xs text-slate-600 select-none cursor-pointer"
                     >
                       Save card token securely for future purchases (via Stripe Customer Token)
                     </label>
@@ -723,7 +731,7 @@ function CheckoutContent() {
                       onClick={handleProceedToPayment}
                       className="px-7 py-3.5 rounded-xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2 cursor-pointer"
                     >
-                      <span>Proceed to Payment ($100)</span>
+                      <span>Proceed to Payment (${chargeAmount.toFixed(2)})</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -735,8 +743,8 @@ function CheckoutContent() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                        Express Payment ($100.00 USD)
+                      <h2 className="text-2xl font-bold text-slate-900">
+                        Express Payment (${chargeAmount.toFixed(2)} USD)
                       </h2>
                       <p className="text-xs text-slate-500 mt-1">
                         GoDaddy-Style Frictionless Authentication • PCI-DSS SAQ A Compliant
@@ -805,6 +813,7 @@ function CheckoutContent() {
                         clientSecret={clientSecret}
                         isDemo={true}
                         billingMode={billingMode}
+                        chargeAmount={chargeAmount}
                         savePaymentMethod={savePaymentMethod}
                         onPaymentSuccess={handlePaymentSuccess}
                       />
@@ -829,6 +838,7 @@ function CheckoutContent() {
                           clientSecret={clientSecret}
                           isDemo={false}
                           billingMode={billingMode}
+                          chargeAmount={chargeAmount}
                           savePaymentMethod={savePaymentMethod}
                           onPaymentSuccess={handlePaymentSuccess}
                         />
@@ -858,9 +868,9 @@ function CheckoutContent() {
           <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
             
             {/* GoDaddy-Style Order Summary Card */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
-              <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-800">
-                <h3 className="font-extrabold text-slate-900 dark:text-white text-base flex items-center gap-2">
+            <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-5">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-200">
+                <h3 className="font-extrabold text-slate-900 text-base flex items-center gap-2">
                   <span>Order Summary</span>
                 </h3>
                 <span className="text-[10px] uppercase font-extrabold text-emerald-600 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
@@ -872,18 +882,18 @@ function CheckoutContent() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 block">
-                      {chargeAmount === 100 ? 'Toolora 5-Tool Productivity Suite' : 'Support & Developer Tip Contribution'}
+                    <span className="font-bold text-slate-800 block">
+                      {chargeAmount === 5
+                        ? 'Toolora 5-Tool Productivity Suite'
+                        : 'Support & Developer Tip Contribution'}
                     </span>
                     <span className="text-[11px] text-slate-400">
-                      {chargeAmount === 100
-                        ? billingMode === 'one-time'
-                          ? 'Lifetime All-Access License'
-                          : 'Annual VIP Membership'
-                        : 'Custom Direct Support Contribution'}
+                      {billingMode === 'one-time'
+                        ? 'Lifetime All-Access Pass ($5.00 Special)'
+                        : 'Annual VIP Membership ($5.00 Special)'}
                     </span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white text-sm font-mono">
+                  <span className="font-bold text-slate-900 text-sm font-mono">
                     ${chargeAmount.toFixed(2)}
                   </span>
                 </div>
@@ -905,29 +915,20 @@ function CheckoutContent() {
               </div>
 
               {/* Price Calculation Box */}
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2">
-                {chargeAmount === 100 ? (
-                  <>
-                    <div className="flex justify-between items-baseline">
-                      <span className="text-xs text-slate-500">Regular Price:</span>
-                      <span className="text-xs text-slate-400 line-through font-mono">$330.00</span>
-                    </div>
-                    <div className="flex justify-between items-baseline">
-                      <span className="text-xs font-bold text-emerald-600">Instant Discount (70% OFF):</span>
-                      <span className="text-xs font-bold text-emerald-600 font-mono">-$230.00</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex justify-between items-baseline text-xs text-slate-500">
-                    <span>Direct Tip Contribution:</span>
-                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300">${chargeAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center border-t border-slate-200 dark:border-slate-700 pt-2.5">
-                  <span className="font-extrabold text-slate-900 dark:text-white text-sm">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs text-slate-500">Regular Price:</span>
+                  <span className="text-xs text-slate-400 line-through font-mono">$25.00</span>
+                </div>
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs font-bold text-emerald-600">Instant Discount (80% OFF):</span>
+                  <span className="text-xs font-bold text-emerald-600 font-mono">-$20.00</span>
+                </div>
+                <div className="flex justify-between items-center border-t border-slate-200 pt-2.5">
+                  <span className="font-extrabold text-slate-900 text-sm">
                     Total Due Now:
                   </span>
-                  <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400">
+                  <span className="text-2xl font-black text-indigo-600">
                     ${chargeAmount.toFixed(2)} <span className="text-xs font-normal text-slate-400">USD</span>
                   </span>
                 </div>

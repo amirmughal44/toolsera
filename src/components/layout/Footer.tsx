@@ -159,7 +159,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                  All-Access Pricing ($100)
+                  All-Access Pricing ($5)
                 </Link>
               </li>
               <li>

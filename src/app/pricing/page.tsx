@@ -11,12 +11,12 @@ export default function PricingPage() {
 
   const faqs = [
     {
-      q: 'What is included in the $100 All-Access Plan?',
-      a: 'The $100 plan unlocks full unrestricted access to all 5 core tools: PDF Merger, Smart Spreadsheet Engine, Image Compressor, Custom QR Studio, and Developer JSON Formatter with unlimited conversions.',
+      q: 'What is included in the $5 All-Access Plan?',
+      a: 'The $5 plan unlocks full unrestricted access to all 5 core tools: PDF Merger, Smart Spreadsheet Engine, Image Compressor, Custom QR Studio, and Developer JSON Formatter with unlimited conversions.',
     },
     {
-      q: 'Is the $100 payment one-time or recurring?',
-      a: 'You can choose either a One-Time Payment for 1-year unlimited access or an Annual Subscription. We explicitly state our pricing terms with zero hidden fees or misleading claims.',
+      q: 'Is the $5 payment one-time or recurring?',
+      a: 'You can choose either a One-Time Payment for unlimited access or an Annual Subscription. We explicitly state our pricing terms with zero hidden fees.',
     },
     {
       q: 'What payment methods do you support?',
@@ -38,10 +38,10 @@ export default function PricingPage() {
             <span>Honest & Transparent Pricing</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            5 Essential Tools. Simple $100 Pricing.
+            5 Essential Tools. Simple $5 Pricing.
           </h1>
           <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400">
-            Get unrestricted access to the 5 core client-side productivity utilities for one simple $100 payment.
+            Get unrestricted access to the 5 core client-side productivity utilities for one simple $5 payment.
           </p>
 
           {/* Billing Switcher Toggle */}
@@ -55,7 +55,7 @@ export default function PricingPage() {
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
-                One-Time Payment ($100)
+                One-Time Payment ($5)
               </button>
               <button
                 onClick={() => setBillingType('annual')}
@@ -65,7 +65,7 @@ export default function PricingPage() {
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                 }`}
               >
-                Annual Subscription ($100/yr)
+                Annual Subscription ($5/yr)
               </button>
             </div>
           </div>
@@ -141,13 +141,13 @@ export default function PricingPage() {
                   Complete 5-Tool Suite
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  &quot;Unlock all 5 tools for $100 with unrestricted lifetime batch power.&quot;
+                  &quot;Unlock all 5 tools for $5 with unrestricted lifetime batch power.&quot;
                 </p>
               </div>
 
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white">
-                  $100
+                  $5
                 </span>
                 <span className="text-xs font-semibold text-slate-500">
                   {billingType === 'one-time' ? '/ One-Time Payment' : '/ Annual Subscription'}
@@ -188,11 +188,11 @@ export default function PricingPage() {
 
             <div className="pt-8">
               <Link
-                href={`/checkout?plan=all-access&billing=${billingType}`}
+                href={`/checkout?plan=all-access&billing=${billingType}&amount=5`}
                 className="w-full py-3.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2"
               >
                 <span>
-                  {isAllAccess ? 'Manage All-Access Membership' : 'Get All 5 Tools — $100'}
+                  {isAllAccess ? 'Manage All-Access Membership' : 'Get All 5 Tools — $5'}
                 </span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
@@ -216,7 +216,7 @@ export default function PricingPage() {
                   <th className="p-4 font-bold">Feature</th>
                   <th className="p-4 font-bold">Free Plan</th>
                   <th className="p-4 font-bold text-indigo-600 dark:text-indigo-400">
-                    All-Access ($100)
+                    All-Access ($5)
                   </th>
                 </tr>
               </thead>
