@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Coffee,
   Heart,
@@ -29,6 +30,7 @@ interface SupporterNote {
 }
 
 export default function SupportPage() {
+  const router = useRouter();
   const [coffeesCount, setCoffeesCount] = useState<number>(3);
   const [customAmount, setCustomAmount] = useState<string>('');
   const [donorName, setDonorName] = useState<string>('');
@@ -113,7 +115,6 @@ export default function SupportPage() {
     if (!currentTotalUSD || currentTotalUSD <= 0) return;
 
     setIsSubmitting(true);
-
     try {
       confetti({
         particleCount: 80,
@@ -122,36 +123,11 @@ export default function SupportPage() {
       });
     } catch {}
 
+    showToast('Redirecting to Express Checkout', `Preparing $${currentTotalUSD} card payment session...`, 'info');
+
     setTimeout(() => {
-      const newSupporter: SupporterNote = {
-        id: Math.random().toString(),
-        name: donorName.trim() || 'Kind Supporter',
-        amount: currentTotalUSD,
-        coffees: Math.max(1, Math.round(currentTotalUSD / coffeePriceUSD)),
-        allocation: allocationMode,
-        causeName: allocationMode === 'dev' ? 'Toolora Engineering Fund' : currentCauseObj.title,
-        message: donorMessage.trim() || (allocationMode === 'charity' ? 'Contributed to charity via Toolora 💖' : 'Bought a warm coffee for the developers! ☕'),
-        date: 'Just now',
-      };
-
-      setSupporters([newSupporter, ...supporters]);
-      setIsSubmitting(false);
-      setDonorName('');
-      setDonorMessage('');
-      setCustomAmount('');
-
-      const toastTitle = allocationMode === 'charity'
-        ? 'Charity Contribution Received! 💖'
-        : allocationMode === 'split'
-        ? 'Thank You for Supporting Dev & Charity! ☕💖'
-        : 'Thank You for the Coffee! ☕';
-
-      showToast(
-        toastTitle,
-        `Your $${currentTotalUSD} contribution is logged with verified transparency.`,
-        'success'
-      );
-    }, 600);
+      router.push(`/checkout?billing=one-time&amount=${currentTotalUSD}`);
+    }, 400);
   };
 
   return (

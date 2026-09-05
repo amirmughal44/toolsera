@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export function getStripeSecretKey(): string {
-  let secretKey = process.env.STRIPE_SECRET_KEY || '';
+  let secretKey = process.env.STRIPE_SECRET_KEY || process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY || '';
   if (!secretKey) {
     const envPath = path.join(process.cwd(), '.env.local');
     if (fs.existsSync(envPath)) {

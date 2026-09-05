@@ -253,10 +253,13 @@ function StripePaymentForm({
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const initialBilling = (searchParams.get('billing') as 'one-time' | 'annual') || 'one-time';
+  const amountParam = parseFloat(searchParams.get('amount') || '');
+  const initialAmount = !isNaN(amountParam) && amountParam > 0 ? amountParam : 100;
   const router = useRouter();
 
   const [step, setStep] = useState<number>(1);
   const [billingMode, setBillingMode] = useState<'one-time' | 'annual'>(initialBilling);
+  const [chargeAmount, setChargeAmount] = useState<number>(initialAmount);
   const [name, setName] = useState('Toolora Member');
   const [email, setEmail] = useState('member@toolora.com');
   const [country, setCountry] = useState('United States');
@@ -338,7 +341,7 @@ function CheckoutContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 100,
+          amount: chargeAmount,
           currency: 'usd',
           email,
           name,
