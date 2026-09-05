@@ -1,0 +1,75 @@
+{
+  "orders": {
+    "ord_1788634465618_82cwde": {
+      "id": "ord_1788634465618_82cwde",
+      "userId": "usr_guest_01",
+      "customerEmail": "member@toolora.comalex.mercer@example.com",
+      "customerName": "Toolora Pro MemberAlex Mercer",
+      "amount": 10000,
+      "currency": "usd",
+      "plan": "all-access-5-tools",
+      "billingMode": "one-time",
+      "status": "pending",
+      "createdAt": "2026-09-05T18:54:25.631Z",
+      "updatedAt": "2026-09-05T18:54:25.631Z"
+    },
+    "ord_1788634612749_oxt2x1": {
+      "id": "ord_1788634612749_oxt2x1",
+      "userId": "usr_guest_01",
+      "customerEmail": "member@toolora.com",
+      "customerName": "Toolora Pro Member",
+      "amount": 10000,
+      "currency": "usd",
+      "plan": "all-access-5-tools",
+      "billingMode": "one-time",
+      "status": "pending",
+      "createdAt": "2026-09-05T18:56:52.751Z",
+      "updatedAt": "2026-09-05T18:56:52.751Z"
+    },
+    "ord_1788636375487_5t6bft": {
+      "id": "ord_1788636375487_5t6bft",
+      "userId": "usr_wnc4tf",
+      "customerEmail": "testcustomer@example.com",
+      "customerName": "Automated Tester",
+      "amount": 10000,
+      "currency": "usd",
+      "plan": "all-access-5-tools",
+      "billingMode": "one-time",
+      "status": "paid",
+      "createdAt": "2026-09-05T19:26:15.488Z",
+      "updatedAt": "2026-09-05T19:26:18.045Z",
+      "paidAt": "2026-09-05T19:26:18.041Z",
+      "cardBrand": "visa",
+      "cardLast4": "4242",
+      "stripePaymentIntentId": "pi_demo_zksp23o3"
+    },
+    "ord_1788637895227_i4rke1": {
+      "id": "ord_1788637895227_i4rke1",
+      "userId": "usr_yt89j3",
+      "customerEmail": "godaddyclient@example.com",
+      "customerName": "Amir Mughal",
+      "amount": 10000,
+      "currency": "usd",
+      "plan": "all-access-5-tools",
+      "billingMode": "one-time",
+      "status": "paid",
+      "createdAt": "2026-09-05T19:51:35.228Z",
+      "updatedAt": "2026-09-05T19:51:39.999Z",
+      "paidAt": "2026-09-05T19:51:39.998Z",
+      "cardBrand": "visa",
+      "cardLast4": "4242"
+    }
+  },
+  "customers": {
+    "usr_yt89j3": {
+      "userId": "usr_yt89j3",
+      "email": "godaddyclient@example.com",
+      "name": "Amir Mughal",
+      "stripeCustomerId": "cus_VCpH2U0zUKVCHq",
+      "createdAt": "2026-09-05T19:51:36.521Z",
+      "updatedAt": "2026-09-05T19:51:36.521Z"
+    }
+  },
+  "paymentMethods": {},
+  "webhookEvents": {}
+}
