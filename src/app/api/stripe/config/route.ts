@@ -54,19 +54,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Update .env.local file
-    const envPath = path.join(process.cwd(), '.env.local');
-    const envContent = `# =========================================================
+    // Update .env.local file safely if filesystem is writable
+    try {
+      const envPath = path.join(process.cwd(), '.env.local');
+      const envContent = `# =========================================================
 # TOOLORA - STRIPE PAYMENT GATEWAY CONFIGURATION
 # =========================================================
-# Payments processed will deposit directly into your Stripe balance.
-# Retrieve your API keys from: https://dashboard.stripe.com/apikeys
-
 STRIPE_SECRET_KEY=${cleanSecret}
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${cleanPub}
 `;
-
-    fs.writeFileSync(envPath, envContent, 'utf-8');
+      fs.writeFileSync(envPath, envContent, 'utf-8');
+    } catch (e) {
+      console.warn('[Stripe Config] Read-only filesystem, updated process.env in memory.');
+    }
 
     // Update process.env in memory
     process.env.STRIPE_SECRET_KEY = cleanSecret;
