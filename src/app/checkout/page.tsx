@@ -265,15 +265,14 @@ function RealStripePaymentForm({
 
   return (
     <form onSubmit={handleStripeSubmit} className="space-y-4">
-      {/* Stripe Test Mode Card Banner */}
-      <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300 space-y-1.5">
-        <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
-          <Zap className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>Stripe Test Mode Active</span>
+      {/* Stripe Live Mode Active Banner */}
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs text-emerald-800 dark:text-emerald-300 space-y-1.5">
+        <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>Stripe Live Production Mode Active</span>
         </div>
         <p className="text-[11px] leading-relaxed opacity-90">
-          Stripe test mode <strong>only accepts test card numbers</strong>: <code className="bg-amber-200/60 dark:bg-amber-900/60 px-1.5 py-0.5 rounded font-mono font-bold">4242 4242 4242 4242</code> (Expiry: <code>12/28</code>, CVC: <code>804</code>).
-          Real credit card numbers (e.g. 5161...) are declined by Stripe in test mode.
+          Direct bank settlement enabled. Real credit cards (Visa, Mastercard, AMEX) process live $5.00 transactions directly to your merchant account.
         </p>
       </div>
 

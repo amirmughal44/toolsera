@@ -2,7 +2,7 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 
 let stripePromise: Promise<Stripe | null> | null = null;
 
-const DEFAULT_PK_B64 = 'cGtfdGVzdF81MVVDUFRHMzFGNWxneHFwS2JCb0FtYWVUZTBnMmlna25PbGRjS2JRZ1BXbjhsUW93WlBiSG5RTDJsaEtYc0hmN1lvT2RCUUlOWnl3cnhlU1N3R3pVNDhIQzAwN2xKQkxKME4=';
+const DEFAULT_PK_B64 = 'cGtfbGl2ZV81MVVDT1BNRUtqZEpQeTRwRkxUWlhiRzR3TkF5RzMzbGVTWjdrbXZpVVFPOGNWOEFWdERUTGk5eW9NcEM1bHViR0dzT01ESW1mb1VMRTRNeWgzU3B3TU8wSjAwOG9DOGdSbkw=';
 
 export function getStripePublishableKey(): string {
   let pubKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';

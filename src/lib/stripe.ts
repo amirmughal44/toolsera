@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import fs from 'fs';
 import path from 'path';
 
-const DEFAULT_SK_B64 = 'c2tfdGVzdF81MVVDUFRHMzFGNWxneHFwS3BzYlN5SWNHM3ZyM3R3RTVVeTZ4Wk9CRXp2dkJGWjRmTWE1SkJOclFodnlydkZNN2h2OXM2UFZNdzNNNUdJMThiVGtkbzF2WTAwckFFR0E5WVY=';
+const DEFAULT_SK_B64 = 'c2tfbGl2ZV81MVVDT1BNRUtqZEpQeTRwRnEya21TZEpXYnNiYXd0WE8zT2h2b0RkaE1OWmc3S1VMTjdQUmhWbzJDRlBTYktITVNHQUZNc3oxbW41ZlN3VUg3YVZEQmNseTAwUDJtZ05Belg=';
 
 export function getStripeSecretKey(): string {
   let secretKey = process.env.STRIPE_SECRET_KEY || process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY || '';
