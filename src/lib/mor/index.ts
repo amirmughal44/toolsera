@@ -21,10 +21,10 @@ export function getMorConfig(): MorCheckoutConfig {
     };
   }
 
-  // Default MoR Fallback Checkout URL for Toolora 5-Tool Suite
+  // Default MoR Checkout URL for Toolora 5-Tool Suite
   return {
-    morProvider: 'lemonsqueezy',
-    checkoutUrl: 'https://toolora.lemonsqueezy.com/buy/all-access-5-tools',
+    morProvider: 'payhip',
+    checkoutUrl: 'https://payhip.com/b/Drtjs',
   };
 }
 
