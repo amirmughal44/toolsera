@@ -4,6 +4,8 @@ import path from 'path';
 import { getStripeSecretKey } from '@/lib/stripe';
 import { getStripePublishableKey } from '@/lib/stripeClient';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const secretKey = getStripeSecretKey();

@@ -7,6 +7,8 @@ import {
   saveCustomer,
 } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
