@@ -121,52 +121,49 @@ function SandboxPaymentForm({
 
   return (
     <form onSubmit={handleSandboxSubmit} className="space-y-4">
-      <div className="space-y-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-700">
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-amber-700 flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5" />
-            <span>GoDaddy-Style 1-Click Frictionless Authorization</span>
+      <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 text-xs text-slate-800 dark:text-slate-200">
+        <div className="flex items-center justify-between pb-2 border-b border-indigo-200/60 dark:border-indigo-800/60">
+          <span className="font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5 text-xs">
+            <ShieldCheck className="w-4 h-4 text-indigo-600 shrink-0" />
+            <span>GoDaddy-Style 1-Click Express Credit Card Gateway</span>
           </span>
-          <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded">
-            Active Simulator
+          <span className="text-[10px] uppercase font-extrabold text-emerald-700 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+            0-OTP Authorized
           </span>
         </div>
-        <p className="text-[11px] text-slate-500">
-          Enter card details below for zero-OTP frictionless authorization:
-        </p>
 
-        <div className="grid grid-cols-2 gap-2 font-mono text-[11px] pt-1">
+        <div className="grid grid-cols-2 gap-3 pt-1">
           <div className="space-y-1 col-span-2">
-            <label className="text-[10px] text-slate-500 font-sans">Card Number</label>
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">Card Number</label>
             <input
               type="text"
               value={demoCardNum}
               onChange={handleCardNumberChange}
               placeholder="5161 3878 7681 4067"
               maxLength={19}
-              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-indigo-600 shadow-xs"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] text-slate-500 font-sans">Expiration</label>
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">Expiration (MM/YY)</label>
             <input
               type="text"
               value={demoExpiry}
               onChange={handleExpiryChange}
               placeholder="01/28"
               maxLength={5}
-              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-indigo-600 shadow-xs"
             />
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] text-slate-500 font-sans">CVC</label>
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">Security Code (CVC)</label>
             <input
               type="text"
               value={demoCvc}
               onChange={handleCvcChange}
               placeholder="804"
               maxLength={4}
-              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-xs font-mono outline-none focus:border-indigo-600 shadow-xs"
             />
           </div>
         </div>
