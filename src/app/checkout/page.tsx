@@ -67,14 +67,37 @@ function SandboxPaymentForm({
 }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [demoCardNum, setDemoCardNum] = useState('4242 4242 4242 4242');
-  const [demoExpiry, setDemoExpiry] = useState('12/28');
-  const [demoCvc, setDemoCvc] = useState('894');
+  const [demoCardNum, setDemoCardNum] = useState('5161 3878 7681 4067');
+  const [demoExpiry, setDemoExpiry] = useState('01/28');
+  const [demoCvc, setDemoCvc] = useState('804');
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 16);
+    const formatted = raw.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    setDemoCardNum(formatted);
+  };
+
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 4);
+    if (raw.length >= 3) {
+      setDemoExpiry(`${raw.slice(0, 2)}/${raw.slice(2)}`);
+    } else {
+      setDemoExpiry(raw);
+    }
+  };
+
+  const handleCvcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setDemoCvc(raw);
+  };
 
   const handleSandboxSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
     setErrorMessage(null);
+
+    const cleanCard = demoCardNum.replace(/\s/g, '');
+    const cardLast4 = cleanCard.slice(-4) || '4067';
 
     setTimeout(async () => {
       try {
@@ -82,8 +105,8 @@ function SandboxPaymentForm({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            cardBrand: 'visa',
-            cardLast4: demoCardNum.slice(-4) || '4242',
+            cardBrand: cleanCard.startsWith('5') ? 'mastercard' : 'visa',
+            cardLast4,
             isDemo: true,
           }),
         });
@@ -118,7 +141,9 @@ function SandboxPaymentForm({
             <input
               type="text"
               value={demoCardNum}
-              onChange={(e) => setDemoCardNum(e.target.value)}
+              onChange={handleCardNumberChange}
+              placeholder="5161 3878 7681 4067"
+              maxLength={19}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
             />
           </div>
@@ -127,7 +152,9 @@ function SandboxPaymentForm({
             <input
               type="text"
               value={demoExpiry}
-              onChange={(e) => setDemoExpiry(e.target.value)}
+              onChange={handleExpiryChange}
+              placeholder="01/28"
+              maxLength={5}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
             />
           </div>
@@ -136,7 +163,9 @@ function SandboxPaymentForm({
             <input
               type="text"
               value={demoCvc}
-              onChange={(e) => setDemoCvc(e.target.value)}
+              onChange={handleCvcChange}
+              placeholder="804"
+              maxLength={4}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
             />
           </div>
