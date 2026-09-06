@@ -23,8 +23,8 @@ export function getMorConfig(): MorCheckoutConfig {
 
   // Default MoR Checkout URL for Toolora 5-Tool Suite
   return {
-    morProvider: 'payhip',
-    checkoutUrl: 'https://payhip.com/b/Drtjs',
+    morProvider: 'generic',
+    checkoutUrl: 'https://www.toolsera.site/checkout',
   };
 }
 
