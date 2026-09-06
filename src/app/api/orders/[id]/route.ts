@@ -8,7 +8,41 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
+    const { searchParams } = new URL(req.url);
+    const sessionId = searchParams.get('session_id') || (id.startsWith('cs_') ? id : null);
+
     let order = getOrderById(id);
+
+    // If ID is a checkout session ID, check Stripe directly
+    if (sessionId && !order) {
+      const stripe = getStripeServer();
+      if (stripe) {
+        try {
+          const session = await stripe.checkout.sessions.retrieve(sessionId);
+          if (session.payment_status === 'paid') {
+            const orderIdFromMeta = session.metadata?.orderId || `ord_${Date.now()}`;
+            order = createOrder({
+              id: orderIdFromMeta,
+              userId: session.metadata?.userId || 'usr_adnan',
+              customerEmail: session.customer_details?.email || session.metadata?.customerEmail || 'adnan2234@gmail.com',
+              customerName: session.customer_details?.name || session.metadata?.customerName || 'Adnan A.M.Tufail',
+              amount: session.amount_total || 500,
+              currency: session.currency || 'usd',
+              plan: session.metadata?.plan || 'all-access-5-tools',
+              billingMode: (session.metadata?.billingMode as any) || 'one-time',
+              status: 'paid',
+              paidAt: new Date().toISOString(),
+              cardBrand: 'Card',
+              cardLast4: 'Verified',
+              stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : undefined,
+            });
+            return NextResponse.json({ success: true, order, verifiedWithStripe: true });
+          }
+        } catch (csErr) {
+          console.error('Failed to retrieve Stripe session:', csErr);
+        }
+      }
+    }
 
     // Vercel serverless cold-start fallback: synthesize order if container instance changed
     if (!order && id && id.startsWith('ord_')) {
@@ -36,26 +70,38 @@ export async function GET(
     }
 
     // If order is still pending in local DB, check directly with Stripe API
-    if (order.status !== 'paid' && order.stripePaymentIntentId) {
+    if (order.status !== 'paid') {
       const stripe = getStripeServer();
       if (stripe) {
-        try {
-          const paymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
-          if (paymentIntent.status === 'succeeded') {
-            const updated = updateOrder(order.id, {
-              status: 'paid',
-              paidAt: new Date().toISOString(),
-              cardBrand: (paymentIntent.payment_method as any)?.card?.brand || order.cardBrand || 'Card',
-              cardLast4: (paymentIntent.payment_method as any)?.card?.last4 || order.cardLast4 || '••••',
-            });
-            return NextResponse.json({ success: true, order: updated, verifiedWithStripe: true });
-          } else if (paymentIntent.status === 'requires_action') {
-            updateOrder(order.id, { status: 'requires_action' });
-          } else if (paymentIntent.status === 'canceled') {
-            updateOrder(order.id, { status: 'canceled' });
+        if (order.stripePaymentIntentId) {
+          try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
+            if (paymentIntent.status === 'succeeded') {
+              const updated = updateOrder(order.id, {
+                status: 'paid',
+                paidAt: new Date().toISOString(),
+                cardBrand: (paymentIntent.payment_method as any)?.card?.brand || order.cardBrand || 'Card',
+                cardLast4: (paymentIntent.payment_method as any)?.card?.last4 || order.cardLast4 || '••••',
+              });
+              return NextResponse.json({ success: true, order: updated, verifiedWithStripe: true });
+            }
+          } catch (stripeErr) {
+            console.error('Failed to sync order with Stripe:', stripeErr);
           }
-        } catch (stripeErr) {
-          console.error('Failed to sync order with Stripe:', stripeErr);
+        } else if (sessionId) {
+          try {
+            const session = await stripe.checkout.sessions.retrieve(sessionId);
+            if (session.payment_status === 'paid') {
+              const updated = updateOrder(order.id, {
+                status: 'paid',
+                paidAt: new Date().toISOString(),
+                stripePaymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : undefined,
+              });
+              return NextResponse.json({ success: true, order: updated, verifiedWithStripe: true });
+            }
+          } catch (e) {
+            console.error('Sync session error:', e);
+          }
         }
       }
     }
