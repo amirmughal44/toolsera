@@ -53,67 +53,158 @@ interface SavedCard {
 // =========================================================================
 // Inner Component: Stripe Elements Payment Form
 // =========================================================================
-function StripePaymentForm({
+// =========================================================================
+// Inner Component: Sandbox / Demo Payment Form (Zero Stripe Hooks)
+// =========================================================================
+function SandboxPaymentForm({
   orderId,
-  clientSecret,
-  isDemo,
-  billingMode,
   chargeAmount,
-  savePaymentMethod,
   onPaymentSuccess,
 }: {
   orderId: string;
-  clientSecret: string;
-  isDemo: boolean;
-  billingMode: 'one-time' | 'annual';
   chargeAmount: number;
-  savePaymentMethod: boolean;
+  onPaymentSuccess: (orderId: string) => void;
+}) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [demoCardNum, setDemoCardNum] = useState('4242 4242 4242 4242');
+  const [demoExpiry, setDemoExpiry] = useState('12/28');
+  const [demoCvc, setDemoCvc] = useState('894');
+
+  const handleSandboxSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setErrorMessage(null);
+
+    setTimeout(async () => {
+      try {
+        await fetch(`/api/orders/${orderId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cardBrand: 'visa',
+            cardLast4: demoCardNum.slice(-4) || '4242',
+            isDemo: true,
+          }),
+        });
+        setIsProcessing(false);
+        onPaymentSuccess(orderId);
+      } catch (err: any) {
+        setIsProcessing(false);
+        setErrorMessage(err.message || 'Sandbox authorization failed.');
+      }
+    }, 1000);
+  };
+
+  return (
+    <form onSubmit={handleSandboxSubmit} className="space-y-4">
+      <div className="space-y-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-700">
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-amber-700 flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" />
+            <span>GoDaddy-Style 1-Click Frictionless Authorization</span>
+          </span>
+          <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded">
+            Active Simulator
+          </span>
+        </div>
+        <p className="text-[11px] text-slate-500">
+          Enter card details below for zero-OTP frictionless authorization:
+        </p>
+
+        <div className="grid grid-cols-2 gap-2 font-mono text-[11px] pt-1">
+          <div className="space-y-1 col-span-2">
+            <label className="text-[10px] text-slate-500 font-sans">Card Number</label>
+            <input
+              type="text"
+              value={demoCardNum}
+              onChange={(e) => setDemoCardNum(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-slate-500 font-sans">Expiration</label>
+            <input
+              type="text"
+              value={demoExpiry}
+              onChange={(e) => setDemoExpiry(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-slate-500 font-sans">CVC</label>
+            <input
+              type="text"
+              value={demoCvc}
+              onChange={(e) => setDemoCvc(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono outline-none focus:border-indigo-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {errorMessage && (
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      <div className="pt-2">
+        <button
+          type="submit"
+          disabled={isProcessing}
+          className="w-full py-4 rounded-2xl font-extrabold text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] shadow-xl shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+        >
+          {isProcessing ? (
+            <>
+              <RefreshCw className="w-5 h-5 animate-spin" />
+              <span>Authorizing Transaction...</span>
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-5 h-5" />
+              <span>
+                Pay ${chargeAmount.toFixed(2)} & Complete Order
+              </span>
+            </>
+          )}
+        </button>
+        <p className="text-[11px] text-slate-400 text-center mt-2.5 flex items-center justify-center gap-1">
+          <Lock className="w-3 h-3 text-slate-400" />
+          <span>GoDaddy-Style 1-Click Frictionless Checkout • Guaranteed 256-Bit SSL Protection</span>
+        </p>
+      </div>
+    </form>
+  );
+}
+
+// =========================================================================
+// Inner Component: Official Live Stripe Hosted Form (Calls useStripe inside Elements)
+// =========================================================================
+function RealStripePaymentForm({
+  orderId,
+  chargeAmount,
+  onPaymentSuccess,
+}: {
+  orderId: string;
+  chargeAmount: number;
   onPaymentSuccess: (orderId: string) => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [demoCardNum, setDemoCardNum] = useState('4242 4242 4242 4242');
-  const [demoExpiry, setDemoExpiry] = useState('12/28');
-  const [demoCvc, setDemoCvc] = useState('894');
   const { showToast } = useToast();
 
   const handleStripeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
-
-    // Sandbox simulator fallback if Stripe secret key is unconfigured
-    if (isDemo || !stripe || !elements) {
-      if (isDemo) {
-        setIsProcessing(true);
-        setTimeout(async () => {
-          try {
-            await fetch(`/api/orders/${orderId}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                cardBrand: 'visa',
-                cardLast4: demoCardNum.slice(-4) || '4242',
-                isDemo: true,
-              }),
-            });
-            setIsProcessing(false);
-            onPaymentSuccess(orderId);
-          } catch (err: any) {
-            setIsProcessing(false);
-            setErrorMessage(err.message || 'Sandbox authorization failed.');
-          }
-        }, 1000);
-        return;
-      }
-      return;
-    }
+    if (!stripe || !elements) return;
 
     setIsProcessing(true);
+    setErrorMessage(null);
 
     try {
-      // Official Stripe Elements 3DS + Frictionless Confirmation
       const result = await stripe.confirmPayment({
         elements,
         redirect: 'if_required',
@@ -145,76 +236,24 @@ function StripePaymentForm({
 
   return (
     <form onSubmit={handleStripeSubmit} className="space-y-4">
-      {isDemo ? (
-        <div className="space-y-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-700 dark:text-slate-300">
-          <div className="flex items-center justify-between">
-            <span className="font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5" />
-              <span>Sandbox Simulator Active</span>
-            </span>
-            <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded">
-              Ready for Keys
-            </span>
-          </div>
-          <p className="text-[11px] text-slate-500">
-            You can test the full GoDaddy-style checkout flow below:
-          </p>
-
-          <div className="grid grid-cols-2 gap-2 font-mono text-[11px] pt-1">
-            <div className="space-y-1 col-span-2">
-              <label className="text-[10px] text-slate-400 font-sans">Card Number</label>
-              <input
-                type="text"
-                value={demoCardNum}
-                onChange={(e) => setDemoCardNum(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 font-sans">Expiration</label>
-              <input
-                type="text"
-                value={demoExpiry}
-                onChange={(e) => setDemoExpiry(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] text-slate-400 font-sans">CVC</label>
-              <input
-                type="text"
-                value={demoCvc}
-                onChange={(e) => setDemoCvc(e.target.value)}
-                className="w-full px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono outline-none"
-              />
-            </div>
+      <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+        <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-200">
+          <span className="font-bold text-slate-800 flex items-center gap-1.5">
+            <CreditCard className="w-4 h-4 text-indigo-600" />
+            <span>PCI-DSS SAQ A Hosted Credit Card Fields</span>
+          </span>
+          <div className="flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
+            <Lock className="w-3.5 h-3.5" />
+            <span>Stripe Encrypted</span>
           </div>
         </div>
-      ) : (
-        <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700 space-y-3">
-          <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-200 dark:border-slate-700">
-            <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <CreditCard className="w-4 h-4 text-indigo-600" />
-              <span>PCI-DSS SAQ A Hosted Credit Card Fields</span>
-            </span>
-            <div className="flex items-center gap-1 text-[11px] text-emerald-600 font-semibold">
-              <Lock className="w-3.5 h-3.5" />
-              <span>Stripe Encrypted</span>
-            </div>
-          </div>
-          {/* Official Stripe Hosted Elements */}
-          <div className="pt-2 min-h-[160px]">
-            <PaymentElement
-              options={{
-                layout: 'tabs',
-              }}
-            />
-          </div>
+        <div className="pt-2 min-h-[160px]">
+          <PaymentElement options={{ layout: 'tabs' }} />
         </div>
-      )}
+      </div>
 
       {errorMessage && (
-        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
           <span>{errorMessage}</span>
         </div>
@@ -223,7 +262,7 @@ function StripePaymentForm({
       <div className="pt-2">
         <button
           type="submit"
-          disabled={isProcessing}
+          disabled={isProcessing || !stripe}
           className="w-full py-4 rounded-2xl font-extrabold text-sm sm:text-base text-white bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] shadow-xl shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {isProcessing ? (
@@ -806,13 +845,9 @@ function CheckoutContent() {
                     </div>
                   ) : clientSecret && orderId ? (
                     isDemo || !stripePromiseInstance || clientSecret.startsWith('pi_mock_') ? (
-                      <StripePaymentForm
+                      <SandboxPaymentForm
                         orderId={orderId}
-                        clientSecret={clientSecret}
-                        isDemo={true}
-                        billingMode={billingMode}
                         chargeAmount={chargeAmount}
-                        savePaymentMethod={savePaymentMethod}
                         onPaymentSuccess={handlePaymentSuccess}
                       />
                     ) : (
@@ -831,13 +866,9 @@ function CheckoutContent() {
                           },
                         }}
                       >
-                        <StripePaymentForm
+                        <RealStripePaymentForm
                           orderId={orderId}
-                          clientSecret={clientSecret}
-                          isDemo={false}
-                          billingMode={billingMode}
                           chargeAmount={chargeAmount}
-                          savePaymentMethod={savePaymentMethod}
                           onPaymentSuccess={handlePaymentSuccess}
                         />
                       </Elements>
