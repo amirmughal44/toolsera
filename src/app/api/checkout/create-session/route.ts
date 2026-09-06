@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
     // 4. Create Stripe Checkout Session
     if (uiMode === 'embedded') {
       const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
         ui_mode: 'embedded_page',
         customer_email: cleanEmail,
         line_items: [

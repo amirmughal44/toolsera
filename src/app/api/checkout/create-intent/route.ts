@@ -120,11 +120,9 @@ export async function POST(req: NextRequest) {
         receipt_email: cleanEmail,
         description: `Toolora 5-Tool All-Access Suite (${billingMode === 'one-time' ? 'One-Time' : 'Annual'})`,
         statement_descriptor_suffix: 'TOOLORA SUITE',
+        payment_method_types: ['card'],
         // If user wants to save card for future purchases:
         setup_future_usage: savePaymentMethod ? 'off_session' : undefined,
-        automatic_payment_methods: {
-          enabled: true,
-        },
         payment_method_options: {
           card: {
             // Request automatic risk-based evaluation (enables frictionless 0-OTP approval for low-risk transactions)
