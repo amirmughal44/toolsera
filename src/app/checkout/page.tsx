@@ -262,12 +262,12 @@ function CheckoutContent() {
   const [step, setStep] = useState<number>(1);
   const [billingMode, setBillingMode] = useState<'one-time' | 'annual'>(initialBilling);
   const [chargeAmount, setChargeAmount] = useState<number>(initialAmount);
-  const [name, setName] = useState('Toolora Member');
-  const [email, setEmail] = useState('member@toolora.com');
-  const [country, setCountry] = useState('United States');
-  const [city, setCity] = useState('New York');
-  const [address, setAddress] = useState('100 Broadway St');
-  const [postalCode, setPostalCode] = useState('10005');
+  const [name, setName] = useState('Adnan A.M.Tufail');
+  const [email, setEmail] = useState('adnan2234@gmail.com');
+  const [country, setCountry] = useState('Saudia Arabia');
+  const [city, setCity] = useState('Madina');
+  const [address, setAddress] = useState('Al Madinah Abo Ubaida Ibn Aljarah Off King Fahd St, P.O. Box 07030');
+  const [postalCode, setPostalCode] = useState('07030');
   const [savePaymentMethod, setSavePaymentMethod] = useState(true);
 
   // Stripe & Intent State
@@ -805,7 +805,7 @@ function CheckoutContent() {
                       </span>
                     </div>
                   ) : clientSecret && orderId ? (
-                    isDemo ? (
+                    isDemo || !stripePromiseInstance || clientSecret.startsWith('pi_mock_') ? (
                       <StripePaymentForm
                         orderId={orderId}
                         clientSecret={clientSecret}
@@ -1068,16 +1068,62 @@ function CheckoutContent() {
   );
 }
 
+class CheckoutErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: string }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: '' };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error: error?.message || 'Checkout interface error' };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('Checkout Error Boundary caught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
+          <div className="max-w-md w-full p-6 rounded-3xl bg-white border border-slate-200 shadow-xl space-y-4 text-center">
+            <AlertCircle className="w-10 h-10 text-amber-500 mx-auto" />
+            <h2 className="text-lg font-bold text-slate-900">Payment Gateway Ready</h2>
+            <p className="text-xs text-slate-500">
+              {this.state.error}
+            </p>
+            <button
+              onClick={() => {
+                this.setState({ hasError: false });
+                window.location.reload();
+              }}
+              className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-md"
+            >
+              Reload Checkout Session
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function CheckoutPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center text-xs text-slate-400">
-          Loading Checkout...
-        </div>
-      }
-    >
-      <CheckoutContent />
-    </Suspense>
+    <CheckoutErrorBoundary>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center text-xs text-slate-400">
+            Loading Checkout...
+          </div>
+        }
+      >
+        <CheckoutContent />
+      </Suspense>
+    </CheckoutErrorBoundary>
   );
 }
