@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
 
     if (!stripeCustomerId) {
       // Check Stripe directly
-      const existingCustomers = await stripe.customers.search({
-        query: `email:\'${cleanEmail}\'`,
+      const existingCustomers = await stripe.customers.list({
+        email: cleanEmail,
         limit: 1,
       });
 

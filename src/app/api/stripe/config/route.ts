@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { getStripeSecretKey } from '@/lib/stripe';
+import { getStripePublishableKey } from '@/lib/stripeClient';
 
 export async function GET() {
   try {
-    let secretKey = process.env.STRIPE_SECRET_KEY || '';
-    let pubKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
-
-    // If not loaded in process.env, check .env.local file directly
-    const envPath = path.join(process.cwd(), '.env.local');
-    if (fs.existsSync(envPath)) {
-      const content = fs.readFileSync(envPath, 'utf-8');
-      const skMatch = content.match(/STRIPE_SECRET_KEY=([^\r\n]+)/);
-      const pkMatch = content.match(/NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=([^\r\n]+)/);
-      if (skMatch && skMatch[1] && !secretKey) secretKey = skMatch[1].trim();
-      if (pkMatch && pkMatch[1] && !pubKey) pubKey = pkMatch[1].trim();
-    }
+    const secretKey = getStripeSecretKey();
+    const pubKey = getStripePublishableKey();
 
     const isConfigured = Boolean(secretKey && secretKey.length > 10 && !secretKey.includes('your_secret_key'));
     const isLive = secretKey.startsWith('sk_live_');
@@ -29,6 +21,7 @@ export async function GET() {
       configured: isConfigured,
       mode: isLive ? 'live' : isTest ? 'test' : 'none',
       maskedSecretKey,
+      publishableKey: pubKey,
       hasPublishableKey: Boolean(pubKey && pubKey.length > 10),
     });
   } catch (error: any) {
