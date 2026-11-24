@@ -4,7 +4,20 @@ import urllib.request
 import urllib.parse
 import re
 import base64
+import time
+import random
 import requests
+
+# In-Memory Cache for High-Traffic Viral Requests (Reduces upstream hits by up to 80%)
+CACHE = {}
+CACHE_TTL = 900  # 15 minutes cache
+
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/126.0.6478.109 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36"
+]
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -34,6 +47,19 @@ class handler(BaseHTTPRequestHandler):
             return
 
         shortcode = match.group(1)
+
+        # 1. Check in-memory cache first
+        now = time.time()
+        if shortcode in CACHE:
+            cached_item = CACHE[shortcode]
+            if now - cached_item['timestamp'] < CACHE_TTL:
+                self.send_json(200, {
+                    'success': True,
+                    'data': cached_item['data'],
+                    'driver': 'Toolsera Turbo Cache (Edge Optimized)'
+                })
+                return
+
         extracted = self.extract_instagram(target_url, shortcode)
 
         if not extracted or not extracted.get('video_url'):
@@ -59,10 +85,16 @@ class handler(BaseHTTPRequestHandler):
             fmt['download_url'] = f"{proxy_download}&type={fmt['type']}"
             fmt['direct_url'] = direct_video_url
 
+        # Store in Cache
+        CACHE[shortcode] = {
+            'data': extracted,
+            'timestamp': now
+        }
+
         self.send_json(200, {
             'success': True,
             'data': extracted,
-            'driver': 'Toolsera High-Speed Engine'
+            'driver': 'Toolsera High-Speed Multi-Engine'
         })
 
     def send_json(self, status_code, data):
@@ -78,18 +110,22 @@ class handler(BaseHTTPRequestHandler):
 
     def extract_instagram(self, target_url, shortcode):
         clean_url = f"https://www.instagram.com/reel/{shortcode}/"
+        ua = random.choice(USER_AGENTS)
+
         meta = {
             'title': f'Instagram Video ({shortcode})',
             'author': '@instagram_creator',
             'thumbnail': None
         }
+
+        # Step 1: OEmbed metadata
         try:
             api_url = f"https://www.instagram.com/api/v1/oembed/?url={clean_url}"
             req = urllib.request.Request(api_url, headers={
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'User-Agent': ua,
                 'X-IG-App-ID': '936619743392459'
             })
-            with urllib.request.urlopen(req, timeout=6) as r:
+            with urllib.request.urlopen(req, timeout=5) as r:
                 oembed = json.loads(r.read().decode('utf-8'))
                 if oembed.get('title'):
                     meta['title'] = oembed['title']
@@ -101,19 +137,19 @@ class handler(BaseHTTPRequestHandler):
             pass
 
         video_url = None
+
+        # Engine 1: Indown High-Speed Gateway
         try:
             s = requests.Session()
-            s.headers.update({
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
-            })
-            home_res = s.get("https://indown.io/", timeout=8)
+            s.headers.update({"User-Agent": ua})
+            home_res = s.get("https://indown.io/", timeout=7)
             token_match = re.search(r'name="_token"\s*value="([^"]+)"', home_res.text)
             if token_match:
                 token = token_match.group(1)
                 post_res = s.post("https://indown.io/download", data={
                     "_token": token,
                     "link": clean_url
-                }, timeout=12)
+                }, timeout=10)
 
                 raw_html = post_res.text
                 cdn_links = re.findall(r'href="(https://[^"]*(?:cdninstagram\.com|fbcdn\.net)[^"]*)"', raw_html)
@@ -130,16 +166,17 @@ class handler(BaseHTTPRequestHandler):
         except Exception:
             pass
 
+        # Engine 2: Instagram Direct Embed Scraper
         if not video_url:
             try:
                 embed_url = f"https://www.instagram.com/p/{shortcode}/embed/captioned/"
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'User-Agent': ua,
                     'Accept-Language': 'en-US,en;q=0.9',
                     'Sec-Fetch-Dest': 'iframe'
                 }
                 req = urllib.request.Request(embed_url, headers=headers)
-                with urllib.request.urlopen(req, timeout=8) as response:
+                with urllib.request.urlopen(req, timeout=7) as response:
                     html = response.read().decode('utf-8', errors='ignore')
                     m_vid = re.search(r'class="EmbeddedMediaVideo"[^>]*src="([^"]+)"', html)
                     if m_vid:
@@ -151,8 +188,26 @@ class handler(BaseHTTPRequestHandler):
             except Exception:
                 pass
 
+        # Engine 3: Instagram GraphQL Fallback
+        if not video_url:
+            try:
+                gql_url = f"https://www.instagram.com/graphql/query/?query_hash=b3055c01b4b222b8a47dc12b090e4e64&variables=%7B%22shortcode%22%3A%22{shortcode}%22%7D"
+                req = urllib.request.Request(gql_url, headers={'User-Agent': ua})
+                with urllib.request.urlopen(req, timeout=6) as response:
+                    gql_data = json.loads(response.read().decode('utf-8'))
+                    media = gql_data.get('data', {}).get('shortcode_media', {})
+                    if media.get('is_video') and media.get('video_url'):
+                        video_url = media['video_url']
+            except Exception:
+                pass
+
         if not video_url:
             return None
+
+        # Ensure direct download trigger parameter on CDN link
+        if 'cdninstagram.com' in video_url or 'fbcdn.net' in video_url:
+            if 'dl=1' not in video_url:
+                video_url += ('&dl=1' if '?' in video_url else '?dl=1')
 
         return {
             'id': shortcode,
