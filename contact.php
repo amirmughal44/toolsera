@@ -1,0 +1,151 @@
+<?php
+/**
+ * TOOLSERA - Contact Us
+ * Developed by Adeel Ahmad
+ */
+
+declare(strict_types=1);
+$config = require __DIR__ . '/config.php';
+$appName = $config['app']['name'] ?? 'Toolsera';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Contact Us - <?= htmlspecialchars($appName) ?></title>
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.php" class="brand-link" aria-label="Toolsera Home">
+                <img src="assets/images/logo.png" alt="Toolsera" class="brand-logo-img">
+            </a>
+
+            <nav aria-label="Main Navigation">
+                <ul class="nav-links">
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="about.php">About Us</a></li>
+                    <li><a href="contact.php" class="active">Contact Us</a></li>
+                    <li><a href="disclaimer.php">Disclaimer</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-action">
+                <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileDrawer">
+                    <svg class="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                    <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="18" x2="18" y2="6"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-drawer" id="mobileDrawer">
+            <a href="index.php">Home</a>
+            <a href="about.php">About Us</a>
+            <a href="contact.php" class="active">Contact Us</a>
+            <a href="disclaimer.php">Disclaimer</a>
+        </div>
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    </header>
+
+    <main class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">Contact <span class="brand-purple-text">Us</span></h1>
+            <p class="page-subtitle">Have questions, feedback, or technical queries? We're here to help.</p>
+        </div>
+
+        <div class="page-card">
+            <div class="contact-grid">
+                <!-- Info Column -->
+                <div class="contact-info-box">
+                    <h2>Direct Communication</h2>
+                    <p>
+                        Feel free to contact our developer and support team directly regarding tool feedback, bug reports, or partnership inquiries.
+                    </p>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Official Email</div>
+                            <div class="contact-val">
+                                <a href="mailto:adeelahmed3376@gmail.com">adeelahmed3376@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Lead Developer</div>
+                            <div class="contact-val">Adeel Ahmad</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Response Time</div>
+                            <div class="contact-val">Within 24 Hours</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Column -->
+                <div>
+                    <h2>Send a Message</h2>
+                    <form id="contactForm" class="contact-form" onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent to Adeel Ahmad (adeelahmed3376@gmail.com).'); this.reset();">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" class="form-input" placeholder="e.g. John Doe" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Your Email Address</label>
+                            <input type="email" id="email" class="form-input" placeholder="name@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" class="form-input" placeholder="Question, Feedback, or Bug Report" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" class="form-textarea" placeholder="How can we help you?" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit" style="width: 100%; justify-content: center;">
+                            <span>Send Message</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom-flex">
+                <p class="copyright-text">&copy; <?= date('Y') ?> <strong>Toolsera</strong>. All rights reserved.</p>
+                <p class="developer-credit-text">Developed with precision by <strong>Adeel Ahmad</strong></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

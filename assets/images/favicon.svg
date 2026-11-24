@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C5CFC" />
+      <stop offset="100%" stop-color="#635BFF" />
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect width="100" height="100" rx="24" fill="#0B0D14" />
+  <!-- Stylized T frame -->
+  <path d="M22 28 H78 V40 H56 V78 H44 V40 H22 Z" fill="#FFFFFF" />
+  <!-- Play triangle in signature purple -->
+  <polygon points="46,45 68,57 46,69" fill="url(#purpleGrad)" />
+</svg>
