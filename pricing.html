@@ -295,6 +295,71 @@
                 </a>
             </div>
         </div>
+
+        <!-- USER FEEDBACK & ISSUE REPORTING SECTION -->
+        <section class="feedback-section" id="feedback" style="margin-top: 48px; border-radius: 24px; padding: 0;">
+            <div class="feedback-card">
+                <div class="feedback-header">
+                    <div class="section-tag-pill">Community Feedback</div>
+                    <h2 class="feedback-title">Help Us Improve Toolsera</h2>
+                    <p class="feedback-subtitle">
+                        Encountered an issue with any feature or have a pricing question? Share your feedback directly with developer Adeel Ahmad so we can make Toolsera even better for you.
+                    </p>
+                </div>
+
+                <form id="feedbackForm" class="feedback-form" novalidate>
+                    <div class="feedback-grid">
+                        <div class="feedback-field">
+                            <label for="feedbackName">Your Name (Optional)</label>
+                            <input type="text" id="feedbackName" class="feedback-input" placeholder="e.g. Alex" autocomplete="name">
+                        </div>
+                        <div class="feedback-field">
+                            <label for="feedbackEmail">Your Email (Optional, for reply)</label>
+                            <input type="email" id="feedbackEmail" class="feedback-input" placeholder="e.g. alex@example.com" autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="feedback-grid">
+                        <div class="feedback-field">
+                            <label for="feedbackCategory">Feedback Category</label>
+                            <select id="feedbackCategory" class="feedback-select">
+                                <option value="pricing">💰 Free Tier / Pricing Feedback</option>
+                                <option value="improvement">💡 Improvement Suggestion</option>
+                                <option value="bug">🐛 Report a Bug / Issue</option>
+                                <option value="reel_downloader">📹 Reels / Video Downloader Issue</option>
+                                <option value="story_viewer">👁️ Anonymous Story Viewer Issue</option>
+                                <option value="other">✨ Other / General Feedback</option>
+                            </select>
+                        </div>
+                        <div class="feedback-field">
+                            <label>How would you rate your experience?</label>
+                            <div class="feedback-rating-pills" id="ratingPills">
+                                <button type="button" class="rating-pill active" data-rating="5">⭐⭐⭐⭐⭐ 5/5</button>
+                                <button type="button" class="rating-pill" data-rating="4">⭐⭐⭐⭐ 4/5</button>
+                                <button type="button" class="rating-pill" data-rating="3">⭐⭐⭐ 3/5</button>
+                                <button type="button" class="rating-pill" data-rating="2">⭐⭐ 2/5</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feedback-field">
+                        <label for="feedbackMessage">Your Message / Suggestion *</label>
+                        <textarea id="feedbackMessage" class="feedback-textarea" rows="4" placeholder="Tell us what you think or what features you want next..." required></textarea>
+                    </div>
+
+                    <div class="feedback-submit-wrap">
+                        <button type="submit" id="feedbackSubmitBtn" class="btn-submit" style="min-width: 220px;">
+                            <span>Send Feedback to Adeel</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                        <span class="feedback-privacy-note">🔒 Your feedback is delivered directly to developer Adeel Ahmad (adeelahmed3376@gmail.com).</span>
+                    </div>
+                </form>
+            </div>
+        </section>
     </main>
 
     <!-- CLEAN SAAS FOOTER -->

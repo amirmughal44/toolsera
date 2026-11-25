@@ -23,18 +23,25 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
     def do_GET(self):
-        # Route clean paths and .php extensions to .html templates
-        if self.path == '/' or self.path == '/index.php':
-            self.path = '/index.html'
-            return super().do_GET()
-        elif self.path == '/about.php':
-            self.path = '/about.html'
-            return super().do_GET()
-        elif self.path == '/contact.php':
-            self.path = '/contact.html'
-            return super().do_GET()
-        elif self.path == '/disclaimer.php':
-            self.path = '/disclaimer.html'
+        clean_routes = {
+            '/': '/index.html',
+            '/index.php': '/index.html',
+            '/posts-viewer': '/posts-viewer.html',
+            '/story-viewer': '/story-viewer.html',
+            '/profile-viewer': '/profile-viewer.html',
+            '/reels-downloader': '/reels-downloader.html',
+            '/hashtag-generator': '/hashtag-generator.html',
+            '/pricing': '/pricing.html',
+            '/faq': '/faq.html',
+            '/about': '/about.html',
+            '/contact': '/contact.html',
+            '/disclaimer': '/disclaimer.html',
+            '/about.php': '/about.html',
+            '/contact.php': '/contact.html',
+            '/disclaimer.php': '/disclaimer.html',
+        }
+        if self.path in clean_routes:
+            self.path = clean_routes[self.path]
             return super().do_GET()
 
         # Image proxy endpoint
@@ -57,10 +64,33 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        if self.path == '/api/extract.php':
+        if self.path in ['/api/extract.php', '/api/extract']:
             try:
                 from api.extract import handler as ExtractHandler
                 h = ExtractHandler.__new__(ExtractHandler)
+                h.request = self.request
+                h.client_address = self.client_address
+                h.server = self.server
+                h.rfile = self.rfile
+                h.wfile = self.wfile
+                h.headers = self.headers
+                h.path = self.path
+                h.command = 'POST'
+                h.request_version = self.request_version
+                h.requestline = f'{self.command} {self.path} {self.request_version}'
+                h.close_connection = self.close_connection
+                h.do_POST()
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'message': str(e)}).encode('utf-8'))
+            return
+
+        if self.path in ['/api/feedback.php', '/api/feedback']:
+            try:
+                from api.feedback import handler as FeedbackHandler
+                h = FeedbackHandler.__new__(FeedbackHandler)
                 h.request = self.request
                 h.client_address = self.client_address
                 h.server = self.server

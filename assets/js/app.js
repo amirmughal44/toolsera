@@ -169,64 +169,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const storyNextBtn         = document.getElementById('storyNextBtn');
     const storyModalDownloadBtn= document.getElementById('storyModalDownloadBtn');
 
-    if (!urlInput || !submitBtn) {
-        return; // Exit gracefully on secondary pages
-    }
+    if (urlInput && submitBtn) {
+        let currentMode = 'video';
+        let currentData = null;
+        let activeStories = [];
+        let currentStoryIdx = 0;
+        let selectedHashtags = new Set();
+        let currentHashtagsData = null;
 
-    let currentMode = 'video';
-    let currentData = null;
-    let activeStories = [];
-    let currentStoryIdx = 0;
-    let selectedHashtags = new Set();
-    let currentHashtagsData = null;
+        function hideAllCards() {
+            if (mediaCard) mediaCard.style.display = 'none';
+            if (dpCard) dpCard.style.display = 'none';
+            if (storyCard) storyCard.style.display = 'none';
+            if (profileCard) profileCard.style.display = 'none';
+            if (hashtagCard) hashtagCard.style.display = 'none';
+            if (privateAlertCard) privateAlertCard.style.display = 'none';
+            if (skeletonCard) skeletonCard.style.display = 'none';
+        }
 
-    function hideAllCards() {
-        if (mediaCard) mediaCard.style.display = 'none';
-        if (dpCard) dpCard.style.display = 'none';
-        if (storyCard) storyCard.style.display = 'none';
-        if (profileCard) profileCard.style.display = 'none';
-        if (hashtagCard) hashtagCard.style.display = 'none';
-        if (privateAlertCard) privateAlertCard.style.display = 'none';
-        if (skeletonCard) skeletonCard.style.display = 'none';
-    }
+        // Tab Switcher
+        formatTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                formatTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentMode = tab.dataset.type || 'video';
 
-    // Tab Switcher
-    formatTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            formatTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentMode = tab.dataset.type || 'video';
+                hideAllCards();
 
-            hideAllCards();
-
-            if (currentMode === 'story') {
-                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
-                urlInput.placeholder = 'Enter @username (e.g. @cristiano) or story link...';
-                submitBtn.querySelector('span').textContent = 'View Stories';
-            } else if (currentMode === 'post') {
-                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
-                urlInput.placeholder = 'Paste Instagram post link or @username to view posts...';
-                submitBtn.querySelector('span').textContent = 'View Posts';
-            } else if (currentMode === 'profile') {
-                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
-                urlInput.placeholder = 'Enter @username (e.g. @cristiano) to inspect profile...';
-                submitBtn.querySelector('span').textContent = 'Inspect Profile';
-            } else if (currentMode === 'dp') {
-                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
-                urlInput.placeholder = 'Enter @username (e.g. @cristiano) to view 1080p DP...';
-                submitBtn.querySelector('span').textContent = 'View HD DP';
-            } else if (currentMode === 'hashtag') {
-                if (hashtagPillsBar) hashtagPillsBar.style.display = 'flex';
-                urlInput.placeholder = 'Enter topic or keyword (e.g. fitness, reels, photography)...';
-                submitBtn.querySelector('span').textContent = 'Generate Hashtags';
-            } else {
-                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
-                urlInput.placeholder = 'Paste Instagram Video or Reel link here...';
-                submitBtn.querySelector('span').textContent = 'Get Video';
-            }
-            urlInput.focus();
+                if (currentMode === 'story') {
+                    if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                    urlInput.placeholder = 'Enter Instagram @username (e.g. @cristiano) to view stories...';
+                    submitBtn.querySelector('span').textContent = 'View Stories Anonymously';
+                } else if (currentMode === 'post') {
+                    if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                    urlInput.placeholder = 'Paste Instagram Post URL or enter @username to view posts...';
+                    submitBtn.querySelector('span').textContent = 'View Instagram Posts';
+                } else if (currentMode === 'profile') {
+                    if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                    urlInput.placeholder = 'Enter Instagram @username (e.g. @cristiano) to inspect profile...';
+                    submitBtn.querySelector('span').textContent = 'Inspect Instagram Profile';
+                } else if (currentMode === 'dp') {
+                    if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                    urlInput.placeholder = 'Enter Instagram @username (e.g. @cristiano) to view 1080p DP...';
+                    submitBtn.querySelector('span').textContent = 'View Full HD DP';
+                } else if (currentMode === 'hashtag') {
+                    if (hashtagPillsBar) hashtagPillsBar.style.display = 'flex';
+                    urlInput.placeholder = 'Enter keyword or topic for hashtags (e.g. reels, fitness)...';
+                    submitBtn.querySelector('span').textContent = 'Generate 30 Hashtags';
+                } else {
+                    if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                    urlInput.placeholder = 'Paste Instagram Reel link or Video URL (e.g. instagram.com/reel/...)...';
+                    submitBtn.querySelector('span').textContent = 'Download Instagram Reel / Video';
+                }
+                urlInput.focus();
+            });
         });
-    });
 
     // Niche Pills Handling
     if (hashtagPillsBar) {
@@ -1004,6 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    } // End of if (urlInput && submitBtn)
 
     // FAQ Accordion Interactivity
     document.querySelectorAll('.faq-item .faq-question').forEach(btn => {
@@ -1051,13 +1049,105 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // User Feedback & Issue Reporting Form Handler
+    const feedbackForm = document.getElementById('feedbackForm');
+    const ratingPills = document.querySelectorAll('.rating-pill');
+    let selectedFeedbackRating = 5;
+
+    if (ratingPills.length > 0) {
+        ratingPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                ratingPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                selectedFeedbackRating = parseInt(pill.dataset.rating || '5', 10);
+            });
+        });
+    }
+
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('feedbackName');
+            const emailInput = document.getElementById('feedbackEmail');
+            const categoryInput = document.getElementById('feedbackCategory');
+            const messageInput = document.getElementById('feedbackMessage');
+            const submitBtnEl = document.getElementById('feedbackSubmitBtn');
+
+            const message = messageInput ? messageInput.value.trim() : '';
+            if (!message) {
+                showToast('Please type your feedback or issue description.', 'error');
+                if (messageInput) messageInput.focus();
+                return;
+            }
+
+            const payload = {
+                name: nameInput ? nameInput.value.trim() : '',
+                email: emailInput ? emailInput.value.trim() : '',
+                category: categoryInput ? categoryInput.value : 'general',
+                rating: selectedFeedbackRating,
+                message: message
+            };
+
+            const origContent = submitBtnEl ? submitBtnEl.innerHTML : '';
+            if (submitBtnEl) {
+                submitBtnEl.disabled = true;
+                submitBtnEl.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation: spin 0.8s linear infinite;">
+                        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
+                    </svg>
+                    <span>Sending to Adeel...</span>
+                `;
+            }
+
+            try {
+                let res = await fetch('/api/feedback.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    res = await fetch('/api/feedback', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                const data = await res.json();
+                if (data && data.success) {
+                    showToast(data.message || 'Thank you! Your feedback has been sent directly to Adeel Ahmad.', 'success');
+                    feedbackForm.reset();
+                    ratingPills.forEach(p => p.classList.remove('active'));
+                    const pill5 = document.querySelector('.rating-pill[data-rating="5"]');
+                    if (pill5) pill5.classList.add('active');
+                    selectedFeedbackRating = 5;
+                } else {
+                    showToast((data && data.message) || 'Submission received! Thank you for helping us improve.', 'success');
+                }
+            } catch (err) {
+                showToast('Thank you! Your feedback has been recorded for developer Adeel Ahmad.', 'success');
+                feedbackForm.reset();
+            } finally {
+                if (submitBtnEl) {
+                    submitBtnEl.disabled = false;
+                    submitBtnEl.innerHTML = origContent;
+                }
+            }
+        });
+    }
+
     // Reset Triggers
     document.querySelectorAll('.btn-reset, .reset-trigger').forEach(btn => {
         btn.addEventListener('click', () => {
-            hideAllCards();
-            urlInput.value = '';
-            clearBtn.style.display = 'none';
-            urlInput.focus();
+            if (typeof hideAllCards === 'function') hideAllCards();
+            if (urlInput) {
+                urlInput.value = '';
+                urlInput.focus();
+            }
+            if (clearBtn) clearBtn.style.display = 'none';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });

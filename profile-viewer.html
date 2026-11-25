@@ -259,23 +259,43 @@
                     </div>
 
                     <div class="what-is-visual-wrap">
-                        <div class="what-is-graphic-card">
-                            <div class="graphic-floating-pill">
-                                <span>🔒 100% Ghost Browsing</span>
-                            </div>
-                            <div class="graphic-phone-preview">
-                                <div class="graphic-story-bar">
-                                    <div class="graphic-story-bar-fill"></div>
+                        <div class="reel-phone-mockup">
+                            <div class="phone-screen-content">
+                                <div class="phone-notch"></div>
+
+                                <!-- Authentic Reel Thumbnail / Video Poster -->
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Instagram Profile Preview" class="reel-mockup-bg" loading="lazy">
+                                <div class="reel-mockup-gradient"></div>
+
+                                <!-- Top Reel Header -->
+                                <div class="reel-top-overlay">
+                                    <span class="reel-live-tag">PROFILE</span>
+                                    <span class="reel-audio-indicator">🔒 Ghost</span>
                                 </div>
-                                <img src="assets/images/logo.png" alt="Preview" class="graphic-story-img" style="background: linear-gradient(135deg, #5938E8, #7057F2); padding: 40px; object-fit: contain;">
-                            </div>
-                            <div class="graphic-3d-folder">
-                                <div class="graphic-folder-icon">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+
+                                <!-- Center Play Trigger -->
+                                <div class="reel-center-play">
+                                    <div class="reel-play-btn-circle" title="Inspect Profile">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                        </svg>
+                                    </div>
+                                    <span class="reel-duration-badge">Full HD Profile</span>
                                 </div>
-                                <div>
-                                    <div style="font-size: 13px; font-weight: 800;">1080p Download</div>
-                                    <div style="font-size: 11px; opacity: 0.9;">Uncompressed Meta CDN</div>
+
+                                <!-- Bottom Reel Creator & Caption Info -->
+                                <div class="reel-bottom-overlay">
+                                    <div class="reel-creator-row">
+                                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80" alt="Creator" class="reel-creator-avatar">
+                                        <span class="reel-creator-handle">@taylorswift</span>
+                                        <span class="reel-verified-badge">✓</span>
+                                        <span class="reel-follow-pill">Verified</span>
+                                    </div>
+                                    <p class="reel-caption-text">Inspect followers, full bio &amp; uncompressed 1080p DP silently 🛡️</p>
+                                    <div class="reel-mockup-dl-pill">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path></svg>
+                                        <span>Download Full HD DP (1080p)</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -382,6 +402,73 @@
                     <button type="button" class="carousel-nav-btn" id="reviewsNextBtn" aria-label="Next review">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- USER FEEDBACK & ISSUE REPORTING SECTION -->
+        <section class="feedback-section" id="feedback">
+            <div class="container">
+                <div class="feedback-card">
+                    <div class="feedback-header">
+                        <div class="section-tag-pill">Community Feedback</div>
+                        <h2 class="feedback-title">Help Us Improve Toolsera</h2>
+                        <p class="feedback-subtitle">
+                            Encountered an issue inspecting profiles or downloading DP images? Have an idea for a new feature? Share your feedback directly with developer Adeel Ahmad so we can make Toolsera even better for you.
+                        </p>
+                    </div>
+
+                    <form id="feedbackForm" class="feedback-form" novalidate>
+                        <div class="feedback-grid">
+                            <div class="feedback-field">
+                                <label for="feedbackName">Your Name (Optional)</label>
+                                <input type="text" id="feedbackName" class="feedback-input" placeholder="e.g. Alex" autocomplete="name">
+                            </div>
+                            <div class="feedback-field">
+                                <label for="feedbackEmail">Your Email (Optional, for reply)</label>
+                                <input type="email" id="feedbackEmail" class="feedback-input" placeholder="e.g. alex@example.com" autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="feedback-grid">
+                            <div class="feedback-field">
+                                <label for="feedbackCategory">Feedback Category</label>
+                                <select id="feedbackCategory" class="feedback-select">
+                                    <option value="profile_dp" selected>👤 Profile / DP Zoomer Issue</option>
+                                    <option value="improvement">💡 Improvement Suggestion</option>
+                                    <option value="bug">🐛 Report a Bug / Issue</option>
+                                    <option value="story_viewer">👁️ Anonymous Story Viewer Issue</option>
+                                    <option value="reel_downloader">📹 Reels / Video Downloader Issue</option>
+                                    <option value="other">✨ Other / General Feedback</option>
+                                </select>
+                            </div>
+                            <div class="feedback-field">
+                                <label>How would you rate your experience?</label>
+                                <div class="feedback-rating-pills" id="ratingPills">
+                                    <button type="button" class="rating-pill active" data-rating="5">⭐⭐⭐⭐⭐ 5/5</button>
+                                    <button type="button" class="rating-pill" data-rating="4">⭐⭐⭐⭐ 4/5</button>
+                                    <button type="button" class="rating-pill" data-rating="3">⭐⭐⭐ 3/5</button>
+                                    <button type="button" class="rating-pill" data-rating="2">⭐⭐ 2/5</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feedback-field">
+                            <label for="feedbackMessage">Your Message / Issue Description *</label>
+                            <textarea id="feedbackMessage" class="feedback-textarea" rows="4" placeholder="Tell us what worked, what broke, or what features you would love to see..." required></textarea>
+                        </div>
+
+                        <div class="feedback-submit-wrap">
+                            <button type="submit" id="feedbackSubmitBtn" class="btn-submit" style="min-width: 220px;">
+                                <span>Send Feedback to Adeel</span>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                            </button>
+                            <span class="feedback-privacy-note">🔒 Your feedback is delivered directly to developer Adeel Ahmad (adeelahmed3376@gmail.com).</span>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>
