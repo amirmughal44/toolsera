@@ -1,6 +1,6 @@
 /**
  * TOOLSERA - Application Frontend Controller
- * All-in-One Instagram Downloader, Anonymous Story & HD DP Viewer
+ * All-in-One Instagram Downloader, Anonymous Stories, Profile Inspector & Hashtag Generator
  * Developed by Adeel Ahmad
  */
 
@@ -89,30 +89,32 @@ document.addEventListener('DOMContentLoaded', () => {
         drawerBackdrop.addEventListener('click', closeMobileMenu);
     }
 
-    // 3. MULTI-MODE DOWNLOADER & VIEWER CONTROLLER
+    // 3. MULTI-MODE CONTROLLER
     const urlInput         = document.getElementById('urlInput');
     const submitBtn        = document.getElementById('submitBtn');
     const pasteBtn         = document.getElementById('pasteBtn');
     const clearBtn         = document.getElementById('clearBtn');
     const skeletonCard     = document.getElementById('skeletonCard');
     const formatTabs       = document.querySelectorAll('.tab-btn');
+    const hashtagPillsBar  = document.getElementById('hashtagPillsBar');
 
-    // Cards
+    // Result Cards
     const mediaCard        = document.getElementById('mediaCard');
     const dpCard           = document.getElementById('dpCard');
     const storyCard        = document.getElementById('storyCard');
+    const profileCard      = document.getElementById('profileCard');
+    const hashtagCard      = document.getElementById('hashtagCard');
     const privateAlertCard = document.getElementById('privateAlertCard');
 
-    // Video elements
+    // Video Elements
     const posterImg        = document.getElementById('posterImg');
     const authorText       = document.getElementById('authorText');
     const captionText      = document.getElementById('captionText');
     const downloadVideo    = document.getElementById('downloadVideoBtn');
     const downloadAudio    = document.getElementById('downloadAudioBtn');
     const copyLinkBtn      = document.getElementById('copyLinkBtn');
-    const resetBtn         = document.getElementById('resetBtn');
 
-    // DP elements
+    // DP Elements
     const dpImg            = document.getElementById('dpImg');
     const dpUsernameText   = document.getElementById('dpUsernameText');
     const dpTitleText      = document.getElementById('dpTitleText');
@@ -120,14 +122,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewFullDpBtn    = document.getElementById('viewFullDpBtn');
     const copyDpLinkBtn    = document.getElementById('copyDpLinkBtn');
 
-    // Story elements
+    // Story Elements
     const storyUsernameText    = document.getElementById('storyUsernameText');
     const storyCountBadge      = document.getElementById('storyCountBadge');
     const storyItemsContainer  = document.getElementById('storyItemsContainer');
+    const playStoryModalBtn    = document.getElementById('playStoryModalBtn');
 
-    // Alert elements
+    // Profile Elements
+    const profileAvatarImg     = document.getElementById('profileAvatarImg');
+    const profileFullName      = document.getElementById('profileFullName');
+    const profileUsername      = document.getElementById('profileUsername');
+    const profileStatusBadge   = document.getElementById('profileStatusBadge');
+    const profileViewStories   = document.getElementById('profileViewStoriesBtn');
+    const profileDownloadDp    = document.getElementById('profileDownloadDpBtn');
+    const profileCopyLink      = document.getElementById('profileCopyLinkBtn');
+    const profileOpenIg        = document.getElementById('profileOpenIgBtn');
+
+    // Hashtag Elements
+    const hashtagKeywordTitle  = document.getElementById('hashtagKeywordTitle');
+    const copyAllHashtagsBtn   = document.getElementById('copyAllHashtagsBtn');
+    const copyTop10Btn         = document.getElementById('copyTop10Btn');
+    const topTagsContainer     = document.getElementById('topTagsContainer');
+    const trendingTagsContainer= document.getElementById('trendingTagsContainer');
+    const nicheTagsContainer   = document.getElementById('nicheTagsContainer');
+    const hashtagCountText     = document.getElementById('hashtagCountText');
+    const copySelectedBtn      = document.getElementById('copySelectedBtn');
+    const selCountNum          = document.getElementById('selCountNum');
+
+    // Alert Elements
     const alertMessage         = document.getElementById('alertMessage');
     const alertViewDpBtn       = document.getElementById('alertViewDpBtn');
+
+    // Story Lightbox Elements
+    const storyModal           = document.getElementById('storyLightboxModal');
+    const storyProgressBars    = document.getElementById('storyProgressBars');
+    const storyModalAvatar     = document.getElementById('storyModalAvatar');
+    const storyModalUser       = document.getElementById('storyModalUser');
+    const storyModalIndex      = document.getElementById('storyModalIndex');
+    const storyModalCloseBtn   = document.getElementById('storyModalCloseBtn');
+    const storyModalMuteBtn    = document.getElementById('storyModalMuteBtn');
+    const storySoundOnIcon     = document.getElementById('storySoundOnIcon');
+    const storySoundOffIcon    = document.getElementById('storySoundOffIcon');
+    const storyModalImg        = document.getElementById('storyModalImg');
+    const storyModalVid        = document.getElementById('storyModalVid');
+    const storyPrevBtn         = document.getElementById('storyPrevBtn');
+    const storyNextBtn         = document.getElementById('storyNextBtn');
+    const storyModalDownloadBtn= document.getElementById('storyModalDownloadBtn');
 
     if (!urlInput || !submitBtn) {
         return; // Exit gracefully on secondary pages
@@ -135,11 +175,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentMode = 'video';
     let currentData = null;
+    let activeStories = [];
+    let currentStoryIdx = 0;
+    let selectedHashtags = new Set();
+    let currentHashtagsData = null;
 
     function hideAllCards() {
         if (mediaCard) mediaCard.style.display = 'none';
         if (dpCard) dpCard.style.display = 'none';
         if (storyCard) storyCard.style.display = 'none';
+        if (profileCard) profileCard.style.display = 'none';
+        if (hashtagCard) hashtagCard.style.display = 'none';
         if (privateAlertCard) privateAlertCard.style.display = 'none';
         if (skeletonCard) skeletonCard.style.display = 'none';
     }
@@ -154,18 +200,42 @@ document.addEventListener('DOMContentLoaded', () => {
             hideAllCards();
 
             if (currentMode === 'story') {
+                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                 urlInput.placeholder = 'Enter @username (e.g. @cristiano) or story link...';
                 submitBtn.querySelector('span').textContent = 'View Stories';
+            } else if (currentMode === 'profile') {
+                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                urlInput.placeholder = 'Enter @username (e.g. @cristiano) to inspect profile...';
+                submitBtn.querySelector('span').textContent = 'Inspect Profile';
             } else if (currentMode === 'dp') {
+                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                 urlInput.placeholder = 'Enter @username (e.g. @cristiano) to view 1080p DP...';
                 submitBtn.querySelector('span').textContent = 'View HD DP';
+            } else if (currentMode === 'hashtag') {
+                if (hashtagPillsBar) hashtagPillsBar.style.display = 'flex';
+                urlInput.placeholder = 'Enter topic or keyword (e.g. fitness, reels, photography)...';
+                submitBtn.querySelector('span').textContent = 'Generate Hashtags';
             } else {
+                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                 urlInput.placeholder = 'Paste Instagram Video or Reel link here...';
                 submitBtn.querySelector('span').textContent = 'Get Video';
             }
             urlInput.focus();
         });
     });
+
+    // Niche Pills Handling
+    if (hashtagPillsBar) {
+        hashtagPillsBar.querySelectorAll('.niche-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                hashtagPillsBar.querySelectorAll('.niche-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                urlInput.value = pill.dataset.niche;
+                clearBtn.style.display = 'inline-flex';
+                handleExtraction();
+            });
+        });
+    }
 
     // Clear Button
     urlInput.addEventListener('input', () => {
@@ -218,17 +288,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawInput = urlInput.value.trim();
 
         if (!rawInput) {
-            showToast('Please enter an Instagram link or username', 'error');
+            showToast('Please enter an Instagram link, username, or keyword', 'error');
             urlInput.focus();
             return;
         }
 
-        // Auto-switch mode if user pasted a story link in video tab
         let mode = currentMode;
         if (rawInput.includes('/stories/')) {
             mode = 'story';
         } else if (!rawInput.startsWith('http') && currentMode === 'video') {
-            mode = 'dp'; // Default raw username to HD DP viewer
+            mode = 'profile'; // Default username in video mode to profile inspector
         }
 
         // Loading State
@@ -262,7 +331,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentData = result.data;
                 const resultMode = result.mode || mode;
 
-                if (resultMode === 'dp') {
+                if (resultMode === 'hashtag') {
+                    renderHashtagCard(result.data);
+                    showToast('30 optimized hashtags generated!', 'success');
+                } else if (resultMode === 'profile') {
+                    renderProfileCard(result.data);
+                    showToast(`Profile @${result.data.username.replace('@','')} inspected!`, 'success');
+                } else if (resultMode === 'dp') {
                     renderDpCard(result.data);
                     showToast('Full HD Profile Picture ready!', 'success');
                 } else if (resultMode === 'stories') {
@@ -277,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showToast('Video ready for download!', 'success');
                 }
             } else {
-                showToast(result.message || 'Unable to retrieve media. Please verify input.', 'error');
+                showToast(result.message || 'Unable to retrieve data. Please verify input.', 'error');
             }
         } catch (error) {
             console.error('Extraction Error:', error);
@@ -361,13 +436,164 @@ document.addEventListener('DOMContentLoaded', () => {
         dpCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // 3. Render Stories Card
+    // 3. Render Profile Inspector Card
+    function renderProfileCard(data) {
+        profileAvatarImg.referrerPolicy = 'no-referrer';
+        const dpSrc = data.thumbnail || data.dp_url || 'assets/images/logo.png';
+        profileAvatarImg.src = dpSrc;
+        profileFullName.textContent = data.full_name || data.username.replace('@', '');
+        profileUsername.textContent = data.username || '@user';
+        
+        if (profileStatusBadge) {
+            profileStatusBadge.textContent = data.is_private ? 'Private Account' : 'Public Account';
+            profileStatusBadge.style.background = data.is_private ? '#FEF2F2' : '#F0FDF4';
+            profileStatusBadge.style.color = data.is_private ? '#B91C1C' : '#15803D';
+        }
+
+        // View Stories Button
+        if (profileViewStories) {
+            profileViewStories.onclick = () => {
+                urlInput.value = data.username.replace('@', '');
+                const storyTab = document.getElementById('tabStory');
+                if (storyTab) storyTab.click();
+                handleExtraction();
+            };
+        }
+
+        // Download DP Button
+        if (profileDownloadDp) {
+            profileDownloadDp.href = data.dp_url;
+            profileDownloadDp.onclick = (e) => {
+                e.preventDefault();
+                downloadDirectBlob(dpSrc, data.dp_url, `${data.username.replace('@','')}_dp_1080p.jpg`, profileDownloadDp);
+            };
+        }
+
+        // Copy Profile Link
+        if (profileCopyLink) {
+            profileCopyLink.onclick = async () => {
+                const igUrl = `https://www.instagram.com/${data.username.replace('@','')}/`;
+                try {
+                    await navigator.clipboard.writeText(igUrl);
+                    showToast('Profile link copied!', 'success');
+                } catch (e) {
+                    showToast('Could not copy link', 'error');
+                }
+            };
+        }
+
+        // Open IG Link
+        if (profileOpenIg) {
+            profileOpenIg.href = `https://www.instagram.com/${data.username.replace('@','')}/`;
+        }
+
+        profileCard.style.display = 'block';
+        profileCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // 4. Render Hashtags Card
+    function renderHashtagCard(data) {
+        currentHashtagsData = data;
+        selectedHashtags = new Set(data.all_30 || []);
+        
+        hashtagKeywordTitle.textContent = `30 Viral Hashtags for #${data.query || 'Instagram'}`;
+
+        function buildTagPills(tagsList, container) {
+            container.innerHTML = '';
+            tagsList.forEach(tag => {
+                const pill = document.createElement('span');
+                pill.className = 'tag-pill selected';
+                pill.textContent = tag;
+                pill.title = 'Click to copy individual tag';
+
+                pill.onclick = async () => {
+                    if (selectedHashtags.has(tag)) {
+                        selectedHashtags.delete(tag);
+                        pill.classList.remove('selected');
+                    } else {
+                        selectedHashtags.add(tag);
+                        pill.classList.add('selected');
+                    }
+                    updateSelectionBar();
+
+                    try {
+                        await navigator.clipboard.writeText(tag);
+                        pill.classList.add('copied');
+                        setTimeout(() => pill.classList.remove('copied'), 1200);
+                        showToast(`Copied ${tag}`, 'info');
+                    } catch (e) {}
+                };
+
+                container.appendChild(pill);
+            });
+        }
+
+        buildTagPills(data.top || [], topTagsContainer);
+        buildTagPills(data.trending || [], trendingTagsContainer);
+        buildTagPills(data.niche || [], nicheTagsContainer);
+
+        function updateSelectionBar() {
+            const count = selectedHashtags.size;
+            selCountNum.textContent = count;
+            if (count > 0 && count < 30) {
+                copySelectedBtn.style.display = 'inline-block';
+                hashtagCountText.textContent = `${count} of 30 tags selected.`;
+            } else if (count === 30) {
+                copySelectedBtn.style.display = 'none';
+                hashtagCountText.textContent = `All 30 tags ready! Click "Copy All" below.`;
+            } else {
+                copySelectedBtn.style.display = 'none';
+                hashtagCountText.textContent = `0 tags selected. Click tags to select.`;
+            }
+        }
+
+        updateSelectionBar();
+
+        // Copy All (30 Tags)
+        copyAllHashtagsBtn.onclick = async () => {
+            const textToCopy = (data.all_30 || []).join(' ');
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                showToast('All 30 hashtags copied to clipboard!', 'success');
+            } catch (e) {
+                showToast('Could not copy tags', 'error');
+            }
+        };
+
+        // Copy Top 10
+        copyTop10Btn.onclick = async () => {
+            const top10 = (data.top || []).slice(0, 10).join(' ');
+            try {
+                await navigator.clipboard.writeText(top10);
+                showToast('Top 10 viral hashtags copied!', 'success');
+            } catch (e) {
+                showToast('Could not copy tags', 'error');
+            }
+        };
+
+        // Copy Selected
+        copySelectedBtn.onclick = async () => {
+            const selText = Array.from(selectedHashtags).join(' ');
+            try {
+                await navigator.clipboard.writeText(selText);
+                showToast(`Copied ${selectedHashtags.size} selected hashtags!`, 'success');
+            } catch (e) {
+                showToast('Could not copy tags', 'error');
+            }
+        };
+
+        hashtagCard.style.display = 'block';
+        hashtagCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // 5. Render Stories Card
     function renderStoryCard(data) {
+        activeStories = data.stories || [];
         storyUsernameText.textContent = data.username || '@user';
-        storyCountBadge.textContent = `${data.count || data.stories.length} Active Stories`;
+        storyCountBadge.textContent = `${activeStories.length} Active Stories`;
         storyItemsContainer.innerHTML = '';
 
-        data.stories.forEach((story, idx) => {
+        activeStories.forEach((story, idx) => {
             const card = document.createElement('div');
             card.className = 'story-item-card';
 
@@ -376,10 +602,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<video src="${story.url}" controls class="story-preview-video" preload="metadata"></video>`
                 : `<img src="${story.preview_proxy || story.url}" alt="Story ${idx+1}" class="story-preview-img" referrerpolicy="no-referrer">`;
 
-            const fileName = `toolsera_${data.username}_story_${idx+1}.${isVideo ? 'mp4' : 'jpg'}`;
+            const fileName = `toolsera_${data.username.replace('@','')}_story_${idx+1}.${isVideo ? 'mp4' : 'jpg'}`;
 
             card.innerHTML = `
-                <div class="story-media-preview">
+                <div class="story-media-preview" title="Click to open in viewer">
                     ${mediaTag}
                     <div class="story-type-badge">${isVideo ? 'Video' : 'Photo'}</div>
                 </div>
@@ -395,6 +621,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
+            // Click preview to open lightbox
+            const previewEl = card.querySelector('.story-media-preview');
+            previewEl.onclick = (e) => {
+                if (e.target.tagName !== 'VIDEO') {
+                    openStoryLightbox(idx, data.username);
+                }
+            };
+
             // Attach blob download click
             const dlBtn = card.querySelector('.btn-story-download');
             dlBtn.onclick = (e) => {
@@ -405,11 +639,150 @@ document.addEventListener('DOMContentLoaded', () => {
             storyItemsContainer.appendChild(card);
         });
 
+        if (playStoryModalBtn) {
+            playStoryModalBtn.onclick = () => {
+                if (activeStories.length > 0) {
+                    openStoryLightbox(0, data.username);
+                }
+            };
+        }
+
         storyCard.style.display = 'block';
         storyCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // 4. Render Private Account Alert
+    // 6. Interactive Story Lightbox
+    function openStoryLightbox(index, username) {
+        if (!activeStories || activeStories.length === 0) return;
+        currentStoryIdx = index;
+        const total = activeStories.length;
+
+        storyModalUser.textContent = username || '@instagram_user';
+        storyModalIndex.textContent = `${currentStoryIdx + 1} / ${total} • 🛡️ Anonymous`;
+
+        // Build top progress bars
+        storyProgressBars.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+            const seg = document.createElement('div');
+            seg.className = 'story-progress-segment';
+            const fill = document.createElement('div');
+            fill.className = 'story-progress-fill';
+            if (i < currentStoryIdx) fill.classList.add('completed');
+            if (i === currentStoryIdx) fill.style.width = '100%';
+            seg.appendChild(fill);
+            storyProgressBars.appendChild(seg);
+        }
+
+        loadCurrentStoryMedia();
+
+        storyModal.style.display = 'flex';
+        storyModal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+    }
+
+    function loadCurrentStoryMedia() {
+        const story = activeStories[currentStoryIdx];
+        if (!story) return;
+
+        const isVideo = story.type === 'video';
+        storyModalIndex.textContent = `${currentStoryIdx + 1} / ${activeStories.length} • 🛡️ Anonymous`;
+
+        // Update progress bar
+        const fills = storyProgressBars.querySelectorAll('.story-progress-fill');
+        fills.forEach((f, i) => {
+            if (i < currentStoryIdx) {
+                f.className = 'story-progress-fill completed';
+                f.style.width = '100%';
+            } else if (i === currentStoryIdx) {
+                f.className = 'story-progress-fill';
+                f.style.width = '100%';
+            } else {
+                f.className = 'story-progress-fill';
+                f.style.width = '0%';
+            }
+        });
+
+        if (isVideo) {
+            storyModalImg.style.display = 'none';
+            storyModalVid.style.display = 'block';
+            storyModalVid.src = story.url;
+            storyModalVid.muted = false;
+            storyModalMuteBtn.style.display = 'inline-flex';
+            storyModalVid.play().catch(() => {
+                storyModalVid.muted = true;
+                storySoundOnIcon.style.display = 'none';
+                storySoundOffIcon.style.display = 'block';
+                storyModalVid.play();
+            });
+        } else {
+            storyModalVid.pause();
+            storyModalVid.style.display = 'none';
+            storyModalMuteBtn.style.display = 'none';
+            storyModalImg.style.display = 'block';
+            storyModalImg.src = story.url;
+        }
+
+        // Setup download button
+        const fileName = `toolsera_story_${currentStoryIdx + 1}.${isVideo ? 'mp4' : 'jpg'}`;
+        storyModalDownloadBtn.href = story.download_url;
+        storyModalDownloadBtn.onclick = (e) => {
+            e.preventDefault();
+            downloadDirectBlob(story.download_url, story.url, fileName, storyModalDownloadBtn);
+        };
+    }
+
+    function closeStoryLightbox() {
+        if (!storyModal) return;
+        storyModal.style.display = 'none';
+        storyModal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        if (storyModalVid) {
+            storyModalVid.pause();
+            storyModalVid.src = '';
+        }
+    }
+
+    if (storyModalCloseBtn) storyModalCloseBtn.addEventListener('click', closeStoryLightbox);
+
+    if (storyPrevBtn) {
+        storyPrevBtn.addEventListener('click', () => {
+            if (currentStoryIdx > 0) {
+                currentStoryIdx--;
+                loadCurrentStoryMedia();
+            }
+        });
+    }
+
+    if (storyNextBtn) {
+        storyNextBtn.addEventListener('click', () => {
+            if (currentStoryIdx < activeStories.length - 1) {
+                currentStoryIdx++;
+                loadCurrentStoryMedia();
+            } else {
+                closeStoryLightbox();
+            }
+        });
+    }
+
+    if (storyModalMuteBtn) {
+        storyModalMuteBtn.addEventListener('click', () => {
+            if (!storyModalVid) return;
+            storyModalVid.muted = !storyModalVid.muted;
+            storySoundOnIcon.style.display = storyModalVid.muted ? 'none' : 'block';
+            storySoundOffIcon.style.display = storyModalVid.muted ? 'block' : 'none';
+        });
+    }
+
+    // Keyboard navigation in lightbox
+    document.addEventListener('keydown', (e) => {
+        if (storyModal && storyModal.style.display === 'flex') {
+            if (e.key === 'Escape') closeStoryLightbox();
+            if (e.key === 'ArrowLeft' && storyPrevBtn) storyPrevBtn.click();
+            if (e.key === 'ArrowRight' && storyNextBtn) storyNextBtn.click();
+        }
+    });
+
+    // 7. Render Private Account Alert
     function renderPrivateAlert(data) {
         if (alertMessage) {
             alertMessage.innerHTML = `
@@ -420,7 +793,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (alertViewDpBtn) {
             alertViewDpBtn.querySelector('span').textContent = `View ${data.username}'s Full HD DP`;
             alertViewDpBtn.onclick = () => {
-                urlInput.value = data.username;
+                urlInput.value = data.username.replace('@','');
                 const dpTab = document.getElementById('tabDp');
                 if (dpTab) dpTab.click();
                 handleExtraction();

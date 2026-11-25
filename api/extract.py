@@ -19,11 +19,114 @@ USER_AGENTS = [
     "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.6478.122 Mobile Safari/537.36"
 ]
 
+HASHTAG_CATEGORIES = {
+    "reels": {
+        "top": ["reels", "reelsinstagram", "reelsvideo", "trendingreels", "viralreels", "reelitfeelit", "explorepage", "explorereels", "foryou", "instareels"],
+        "trending": ["reelsviral", "reelslovers", "trendingnow", "viralvideo", "fyp", "firstreel", "reelstrending", "reelsvideoinstagram", "contentcreator", "dailyreels"],
+        "niche": ["reelsgrowth", "creators", "reelsforyou", "reelsofinstagram", "reelsedit", "shortvideo", "instavideo", "reelkarofeelkaro", "virals", "trendingposts"]
+    },
+    "fitness": {
+        "top": ["fitness", "gym", "workout", "fitnessmotivation", "fit", "motivation", "bodybuilding", "training", "health", "lifestyle"],
+        "trending": ["fitfam", "gymlife", "muscle", "personaltrainer", "exercise", "crossfit", "healthylifestyle", "fitnessjourney", "gymmotivation", "sport"],
+        "niche": ["homeworkout", "fitnessgoals", "gains", "legday", "cleanbulk", "shredded", "fitlife", "strengthtraining", "physique", "dailyworkout"]
+    },
+    "photography": {
+        "top": ["photography", "photooftheday", "naturephotography", "travelphotography", "streetphotography", "portraitphotography", "canon", "nikon", "sony", "art"],
+        "trending": ["photographer", "photoshoot", "landscape", "picoftheday", "portrait", "visualsoflife", "moodygrams", "artofvisuals", "agameoftones", "lensculture"],
+        "niche": ["goldenhour", "streetclassics", "visualambassadors", "citykillerz", "portraitpage", "lensbible", "depthobsessed", "composition", "frame", "gramslayers"]
+    },
+    "travel": {
+        "top": ["travel", "travelphotography", "travelgram", "nature", "wanderlust", "travelblogger", "instatravel", "adventure", "landscape", "trip"],
+        "trending": ["explore", "vacation", "holiday", "beautifuldestinations", "travelling", "traveling", "traveler", "tourism", "passionpassport", "traveltheworld"],
+        "niche": ["roamtheplanet", "traveladdict", "solotravel", "bucketlist", "earthfocus", "wildernessculture", "hiddenplaces", "travelvibes", "worldtraveler", "voyage"]
+    },
+    "business": {
+        "top": ["business", "entrepreneur", "marketing", "success", "motivation", "money", "mindset", "digitalmarketing", "smallbusiness", "finance"],
+        "trending": ["entrepreneurship", "businessowner", "startup", "hustle", "investment", "leadership", "branding", "wealth", "inspiration", "goals"],
+        "niche": ["passiveincome", "ecommerce", "financialfreedom", "onlinebusiness", "businessgrowth", "scaleup", "growthmindset", "solopreneur", "b2b", "agency"]
+    },
+    "food": {
+        "top": ["food", "foodporn", "foodie", "instafood", "foodphotography", "delicious", "yummy", "foodstagram", "dinner", "lunch"],
+        "trending": ["chef", "foodblogger", "foodlover", "homemade", "tasty", "cooking", "eat", "restaurant", "dessert", "healthyfood"],
+        "niche": ["streetfood", "comfortfood", "foodgasm", "recipe", "foodiesofinstagram", "baking", "foodart", "culinary", "mealprep", "homecooking"]
+    },
+    "fashion": {
+        "top": ["fashion", "style", "ootd", "love", "fashionblogger", "fashionista", "streetstyle", "instafashion", "model", "stylish"],
+        "trending": ["fashionstyle", "outfitoftheday", "beauty", "dress", "outfit", "mensfashion", "womensfashion", "lookbook", "trendy", "shopping"],
+        "niche": ["vintagefashion", "sustainablefashion", "streetwear", "casualstyle", "minimalstyle", "aestheticoutfit", "outfitideas", "chic", "capsulewardrobe", "highfashion"]
+    },
+    "motivation": {
+        "top": ["motivation", "inspiration", "quotes", "mindset", "motivationalquotes", "success", "life", "positivevibes", "goals", "lifestyle"],
+        "trending": ["inspirationalquotes", "dailyquotes", "selfcare", "positivity", "selflove", "quoteoftheday", "quote", "believe", "wisdom", "discipline"],
+        "niche": ["grindneverstops", "hardworkpaysoff", "growthmindset", "deepquotes", "mentalstrength", "focus", "dreambig", "dailywisdom", "vision", "habits"]
+    },
+    "tech": {
+        "top": ["tech", "technology", "coding", "programmer", "developer", "python", "webdevelopment", "javascript", "softwaredeveloper", "coder"],
+        "trending": ["datascience", "artificialintelligence", "machinelearning", "cybersecurity", "computerscience", "techtrends", "innovation", "programminglife", "fullstack", "code"],
+        "niche": ["buildinpublic", "learnprogramming", "frontenddeveloper", "devcommunity", "backenddeveloper", "coderslife", "softwareengineering", "techstartup", "webdesign", "developerlife"]
+    },
+    "beauty": {
+        "top": ["beauty", "skincare", "makeup", "skincareroutine", "glowingskin", "selfcare", "naturalbeauty", "cosmetics", "makeuptutorial", "skin"],
+        "trending": ["beautycare", "haircare", "beautytips", "antiaging", "cleanbeauty", "mua", "instabeauty", "flawlessskin", "skincareproducts", "esthetician"],
+        "niche": ["kbeauty", "glowup", "skincarecommunity", "makeupartist", "beautytrends", "glassskin", "organicskincare", "lipgloss", "hairgoals", "crueltyfreebeauty"]
+    }
+}
+
 def clean_username(input_str):
     s = input_str.strip()
     s = re.sub(r'https?://(?:www\.)?instagram\.com/(?:stories/)?', '', s)
     s = s.strip('/').split('/')[0].split('?')[0].lstrip('@')
     return s
+
+def generate_hashtag_set(query):
+    query_clean = query.lower().strip().lstrip('#')
+    match_cat = None
+    for k in HASHTAG_CATEGORIES:
+        if k in query_clean or query_clean in k:
+            match_cat = k
+            break
+
+    if match_cat:
+        cat_data = HASHTAG_CATEGORIES[match_cat]
+        top = [f"#{t}" for t in cat_data["top"]]
+        trending = [f"#{t}" for t in cat_data["trending"]]
+        niche = [f"#{t}" for t in cat_data["niche"]]
+        return {
+            "query": query_clean,
+            "category": match_cat.title(),
+            "top": top,
+            "trending": trending,
+            "niche": niche,
+            "all_30": (top + trending + niche)[:30],
+            "count": 30
+        }
+
+    # Dynamic algorithmic generation for custom niches
+    clean = re.sub(r'[^a-z0-9]', '', query_clean)
+    if not clean:
+        clean = "viral"
+
+    top = [
+        f"#{clean}", f"#{clean}life", f"#{clean}love", f"#{clean}daily", f"#{clean}gram",
+        f"#insta{clean}", f"#{clean}oftheday", f"#{clean}addict", f"#{clean}lovers", f"#bestof{clean}"
+    ]
+    trending = [
+        f"#{clean}trend", f"#{clean}viral", f"#{clean}world", f"#{clean}community", f"#{clean}style",
+        f"#{clean}inspiration", f"#{clean}goals", f"#{clean}tips", f"#{clean}creator", f"#{clean}challenge"
+    ]
+    niche = [
+        f"#{clean}growth", f"#{clean}hub", f"#{clean}club", f"#{clean}guide", f"#{clean}feed",
+        f"#{clean}focus", f"#{clean}page", f"#{clean}corner", f"#{clean}vibes", f"#{clean}experience"
+    ]
+    return {
+        "query": query_clean,
+        "category": "Custom Niche",
+        "top": top,
+        "trending": trending,
+        "niche": niche,
+        "all_30": (top + trending + niche)[:30],
+        "count": 30
+    }
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -46,14 +149,47 @@ class handler(BaseHTTPRequestHandler):
         requested_mode = payload.get('type', 'auto').strip().lower()
 
         if not target_url:
-            self.send_json(400, {'success': False, 'message': 'Please provide an Instagram URL or username.'})
+            self.send_json(400, {'success': False, 'message': 'Please provide an Instagram URL, username, or keyword.'})
             return
 
         now = time.time()
         ua = random.choice(USER_AGENTS)
 
         # ------------------------------------------------------------------
-        # MODE 1: PROFILE PICTURE (HD DP) EXTRACTION
+        # MODE 1: HASHTAG GENERATOR
+        # ------------------------------------------------------------------
+        if requested_mode == 'hashtag':
+            tags = generate_hashtag_set(target_url)
+            self.send_json(200, {
+                'success': True,
+                'mode': 'hashtag',
+                'data': tags
+            })
+            return
+
+        # ------------------------------------------------------------------
+        # MODE 2: FULL PROFILE VIEWER / INSPECTOR
+        # ------------------------------------------------------------------
+        if requested_mode == 'profile':
+            username = clean_username(target_url)
+            cache_key = f"profile_{username}"
+            if cache_key in CACHE and now - CACHE[cache_key]['timestamp'] < CACHE_TTL:
+                self.send_json(200, {'success': True, 'mode': 'profile', 'data': CACHE[cache_key]['data']})
+                return
+
+            profile_data = self.extract_profile(username, ua)
+            if profile_data:
+                CACHE[cache_key] = {'data': profile_data, 'timestamp': now}
+                self.send_json(200, {'success': True, 'mode': 'profile', 'data': profile_data})
+            else:
+                self.send_json(422, {
+                    'success': False,
+                    'message': f'Could not find profile for @{username}. Please verify the username.'
+                })
+            return
+
+        # ------------------------------------------------------------------
+        # MODE 3: PROFILE PICTURE (HD DP) EXTRACTION
         # ------------------------------------------------------------------
         if requested_mode == 'dp':
             username = clean_username(target_url)
@@ -74,7 +210,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         # ------------------------------------------------------------------
-        # MODE 2: ANONYMOUS STORY VIEWER EXTRACTION
+        # MODE 4: ANONYMOUS STORY VIEWER EXTRACTION
         # ------------------------------------------------------------------
         if requested_mode == 'story' or 'instagram.com/stories/' in target_url:
             username = clean_username(target_url)
@@ -100,7 +236,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         # ------------------------------------------------------------------
-        # MODE 3: VIDEO / REEL EXTRACTION (DEFAULT)
+        # MODE 5: VIDEO / REEL EXTRACTION (DEFAULT)
         # ------------------------------------------------------------------
         match = re.search(r'instagram\.com/(?:p|reel|reels|tv|share/(?:p|reel))/([A-Za-z0-9_-]+)', target_url)
         if not match:
@@ -179,6 +315,54 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     # ----------------------------------------------------------------------
+    # EXTRACTOR: FULL PROFILE INSPECTOR
+    # ----------------------------------------------------------------------
+    def extract_profile(self, username, ua):
+        s = requests.Session()
+        s.headers.update({'User-Agent': ua})
+        try:
+            r = s.get('https://indown.io/insta-dp-viewer', timeout=8)
+            token = re.search(r'name="_token"\s*value="([^"]+)"', r.text).group(1)
+            res = s.post('https://indown.io/download', data={'_token': token, 'link': f'https://www.instagram.com/{username}/'}, timeout=12)
+            
+            dp_links = re.findall(r'href="(https://[^"]*(?:cdninstagram\.com|fbcdn\.net)[^"]*)"', res.text)
+            dp_url = dp_links[0].replace('&amp;', '&') if dp_links else None
+            proxy_dp = f"api/image_proxy.php?url={urllib.parse.quote(dp_url)}" if dp_url else None
+            
+            name_match = re.search(r'([A-Za-z0-9\s._\-]+)\s*<br\s*/?>\s*' + re.escape(username), res.text, re.IGNORECASE)
+            full_name = name_match.group(1).strip() if name_match else username.capitalize()
+            
+            is_private = bool(re.search(r'\b(this account is private|account is private)\b', res.text, re.IGNORECASE))
+            
+            if dp_url:
+                return {
+                    'username': f'@{username}',
+                    'full_name': full_name,
+                    'dp_url': dp_url,
+                    'thumbnail': proxy_dp,
+                    'is_private': is_private,
+                    'profile_link': f'https://www.instagram.com/{username}/',
+                    'type': 'profile'
+                }
+        except Exception:
+            pass
+
+        # Fallback via DP extractor
+        dp_fallback = self.extract_dp(username, ua)
+        dp_url = dp_fallback.get('dp_url') if dp_fallback else None
+        proxy_dp = dp_fallback.get('thumbnail') if dp_fallback else None
+
+        return {
+            'username': f'@{username}',
+            'full_name': username.capitalize(),
+            'dp_url': dp_url,
+            'thumbnail': proxy_dp,
+            'is_private': False,
+            'profile_link': f'https://www.instagram.com/{username}/',
+            'type': 'profile'
+        }
+
+    # ----------------------------------------------------------------------
     # EXTRACTOR: PROFILE DP
     # ----------------------------------------------------------------------
     def extract_dp(self, username, ua):
@@ -237,7 +421,7 @@ class handler(BaseHTTPRequestHandler):
             res = s.post('https://indown.io/download', data={'_token': token, 'link': f'https://www.instagram.com/stories/{username}/'}, timeout=14)
 
             # Check for private account indicator
-            if 'private' in res.text.lower() and not re.search(r'href="(https://[^"]*(?:cdninstagram\.com|fbcdn\.net)[^"]*)"', res.text):
+            if bool(re.search(r'\b(this account is private|account is private)\b', res.text, re.IGNORECASE)) and not re.search(r'href="(https://[^"]*(?:cdninstagram\.com|fbcdn\.net)[^"]*)"', res.text):
                 return {
                     'username': f'@{username}',
                     'is_private': True,
