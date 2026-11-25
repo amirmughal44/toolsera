@@ -3,7 +3,6 @@
   "rewrites": [
     { "source": "/api/extract.php", "destination": "/api/extract" },
     { "source": "/api/feedback.php", "destination": "/api/feedback" },
-    { "source": "/api/feedback", "destination": "/api/feedback" },
     { "source": "/api/download.php", "destination": "/api/download" },
     { "source": "/api/image_proxy.php", "destination": "/api/image_proxy" },
     { "source": "/story-viewer", "destination": "/story-viewer.html" },
