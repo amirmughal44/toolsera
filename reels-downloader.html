@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Instagram Reels Downloader - Download 1080p MP4 Videos No Watermark | Toolsera</title>
+    <meta name="description" content="Download Instagram Reels and Videos in original 1080p Full HD without watermarks. Free, fast, and secure MP4 and MP3 audio downloads with Toolsera.">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="brand-link" aria-label="Toolsera Home">
+                <img src="assets/images/logo.png" alt="Toolsera" class="brand-logo-img">
+            </a>
+
+            <nav aria-label="Main Navigation">
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="story-viewer.html">Story Viewer</a></li>
+                    <li><a href="profile-viewer.html">Profile Viewer</a></li>
+                    <li><a href="reels-downloader.html" class="active">Reels</a></li>
+                    <li><a href="hashtag-generator.html">Hashtags</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-action">
+                <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileDrawer">
+                    <svg class="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                    <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="18" x2="18" y2="6"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-drawer" id="mobileDrawer">
+            <a href="index.html">Home</a>
+            <a href="story-viewer.html">Story Viewer</a>
+            <a href="profile-viewer.html">Profile Viewer</a>
+            <a href="reels-downloader.html" class="active">Reels Downloader</a>
+            <a href="hashtag-generator.html">Hashtag Generator</a>
+            <a href="pricing.html">Pricing ($0 Free)</a>
+            <a href="faq.html">FAQ</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    </header>
+
+    <main>
+        <section class="hero-section" id="downloader">
+            <div class="container">
+                <div class="hero-pill">
+                    <span>1080p Full HD • No Watermarks • Instant MP4</span>
+                </div>
+
+                <h1 class="hero-title">
+                    Instagram Reels &amp; <br>
+                    <span class="brand-purple-text">Video Downloader in 1080p</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Download any Instagram Reel, Video, or Audio in original uncompressed quality without annoying watermarks or registration.
+                </p>
+
+                <!-- Hidden tabs element for app.js compatibility -->
+                <div class="format-tabs" role="tablist" style="display: none;">
+                    <button class="tab-btn active" data-type="video" role="tab" id="tabVideo"><span>Video</span></button>
+                    <button class="tab-btn" data-type="story" role="tab" id="tabStory"><span>Stories</span></button>
+                    <button class="tab-btn" data-type="profile" role="tab" id="tabProfile"><span>Profile</span></button>
+                    <button class="tab-btn" data-type="dp" role="tab" id="tabDp"><span>DP</span></button>
+                    <button class="tab-btn" data-type="hashtag" role="tab" id="tabHashtag"><span>Hashtags</span></button>
+                </div>
+
+                <!-- Search Capsule Box -->
+                <div class="downloader-box">
+                    <div class="search-capsule">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            class="search-input" 
+                            placeholder="Paste Instagram Reel or Post link here..." 
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+
+                        <div class="capsule-actions">
+                            <button type="button" id="clearBtn" class="btn-clear" title="Clear input">×</button>
+                            <button type="button" id="pasteBtn" class="btn-paste">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                </svg>
+                                <span>Paste</span>
+                            </button>
+                            <button type="button" id="submitBtn" class="btn-submit">
+                                <span>Get Video</span>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-hint">
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-purple)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 100% Watermark-Free</span>
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-purple)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Original MP4 &amp; Audio (MP3)</span>
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-purple)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Unlimited High-Speed Downloads</span>
+                    </div>
+
+                    <!-- RESULTS CONTAINER -->
+                    <div class="results-wrapper">
+                        <div id="skeletonCard" class="skeleton-card">
+                            <div class="skeleton-thumb"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line medium"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+
+                        <!-- Active Result Media Card -->
+                        <div id="mediaCard" class="media-card">
+                            <div class="media-grid">
+                                <div class="media-poster-wrap">
+                                    <img id="posterImg" src="" alt="Video Poster" class="media-poster-img" referrerpolicy="no-referrer">
+                                    <div class="media-quality-badge">
+                                        <span>1080p Full HD</span>
+                                    </div>
+                                    <div id="durationBadge" class="media-duration-badge">HD MP4</div>
+                                </div>
+
+                                <div class="media-meta">
+                                    <div class="media-author">
+                                        <span id="authorText">@creator</span>
+                                        <span class="media-author-badge">Public Video</span>
+                                    </div>
+
+                                    <p id="captionText" class="media-caption">Instagram Video</p>
+
+                                    <div class="download-actions">
+                                        <a href="#" id="downloadVideoBtn" class="btn-download-primary" download="toolsera_video.mp4">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            <span>Download Video (1080p MP4)</span>
+                                        </a>
+
+                                        <div class="action-row">
+                                            <a href="#" id="downloadAudioBtn" class="btn-action-secondary" download="toolsera_audio.mp3">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M9 18V5l12-2v13"></path>
+                                                    <circle cx="6" cy="18" r="3"></circle>
+                                                    <circle cx="18" cy="16" r="3"></circle>
+                                                </svg>
+                                                <span>Audio (MP3)</span>
+                                            </a>
+
+                                            <button type="button" id="copyLinkBtn" class="btn-action-secondary">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                                </svg>
+                                                <span>Copy Link</span>
+                                            </button>
+                                        </div>
+
+                                        <div class="reset-action">
+                                            <button type="button" id="resetBtn" class="btn-reset">Download another video</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fallback Cards for App.js -->
+                        <div id="dpCard" style="display: none;"></div>
+                        <div id="storyCard" style="display: none;"></div>
+                        <div id="profileCard" style="display: none;"></div>
+                        <div id="hashtagCard" style="display: none;"></div>
+                        <div id="privateAlertCard" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CLEAN SAAS FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="index.html" class="brand-link">
+                        <img src="assets/images/logo.png" alt="Toolsera" class="brand-logo-img">
+                    </a>
+                    <p>Toolsera is an independent digital media utility engineered for high-quality, watermark-free downloads and anonymous story viewing.</p>
+                    <div class="dev-badge-wrap">
+                        <span class="dev-badge">Developed by <strong>Adeel Ahmad</strong></span>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Instagram Tools</h4>
+                    <ul>
+                        <li><a href="story-viewer.html">Anonymous Story Viewer</a></li>
+                        <li><a href="profile-viewer.html">Profile Inspector &amp; DP</a></li>
+                        <li><a href="reels-downloader.html">Reels Downloader</a></li>
+                        <li><a href="hashtag-generator.html">Hashtag Generator</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources &amp; Legal</h4>
+                    <ul>
+                        <li><a href="pricing.html">Pricing ($0 Free)</a></li>
+                        <li><a href="faq.html">FAQ &amp; Help</a></li>
+                        <li><a href="about.html">About Toolsera</a></li>
+                        <li><a href="contact.html">Contact Support</a></li>
+                        <li><a href="disclaimer.html">Legal Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-flex">
+                    <p class="copyright-text">&copy; 2026 <strong>Toolsera</strong>. All rights reserved.</p>
+                    <p class="developer-credit-text">Crafted with precision by <strong>Adeel Ahmad</strong></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoTab = document.getElementById('tabVideo');
+            if (videoTab) videoTab.click();
+        });
+    </script>
+</body>
+</html>

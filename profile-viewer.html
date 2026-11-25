@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Instagram Profile Viewer & Full HD DP Zoomer - Toolsera</title>
+    <meta name="description" content="Inspect any Instagram profile, view uncompressed 1080p profile pictures (DP) for public and private accounts, and check active stories silently with Toolsera.">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="brand-link" aria-label="Toolsera Home">
+                <img src="assets/images/logo.png" alt="Toolsera" class="brand-logo-img">
+            </a>
+
+            <nav aria-label="Main Navigation">
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="story-viewer.html">Story Viewer</a></li>
+                    <li><a href="profile-viewer.html" class="active">Profile Viewer</a></li>
+                    <li><a href="reels-downloader.html">Reels</a></li>
+                    <li><a href="hashtag-generator.html">Hashtags</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-action">
+                <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileDrawer">
+                    <svg class="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                    <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="18" x2="18" y2="6"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="mobile-drawer" id="mobileDrawer">
+            <a href="index.html">Home</a>
+            <a href="story-viewer.html">Story Viewer</a>
+            <a href="profile-viewer.html" class="active">Profile Viewer</a>
+            <a href="reels-downloader.html">Reels Downloader</a>
+            <a href="hashtag-generator.html">Hashtag Generator</a>
+            <a href="pricing.html">Pricing ($0 Free)</a>
+            <a href="faq.html">FAQ</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </div>
+        <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    </header>
+
+    <main>
+        <section class="hero-section" id="downloader">
+            <div class="container">
+                <div class="hero-pill">
+                    <span>1080p Uncompressed • Public &amp; Private DP • Instant Zoom</span>
+                </div>
+
+                <h1 class="hero-title">
+                    Instagram Profile Inspector &amp; <br>
+                    <span class="brand-purple-text">Full HD 1080p DP Zoomer</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    Inspect any Instagram creator, zoom uncompressed 1080p profile pictures for both public &amp; private accounts, and launch silent story viewers in 1 click.
+                </p>
+
+                <!-- Hidden tabs element for app.js compatibility -->
+                <div class="format-tabs" role="tablist" style="display: none;">
+                    <button class="tab-btn" data-type="video" role="tab" id="tabVideo"><span>Video</span></button>
+                    <button class="tab-btn" data-type="story" role="tab" id="tabStory"><span>Stories</span></button>
+                    <button class="tab-btn active" data-type="profile" role="tab" id="tabProfile"><span>Profile</span></button>
+                    <button class="tab-btn" data-type="dp" role="tab" id="tabDp"><span>DP</span></button>
+                    <button class="tab-btn" data-type="hashtag" role="tab" id="tabHashtag"><span>Hashtags</span></button>
+                </div>
+
+                <!-- Search Capsule Box -->
+                <div class="downloader-box">
+                    <div class="search-capsule">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            class="search-input" 
+                            placeholder="Enter @username (e.g. @cristiano) or profile URL..." 
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+
+                        <div class="capsule-actions">
+                            <button type="button" id="clearBtn" class="btn-clear" title="Clear input">×</button>
+                            <button type="button" id="pasteBtn" class="btn-paste">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                </svg>
+                                <span>Paste</span>
+                            </button>
+                            <button type="button" id="submitBtn" class="btn-submit">
+                                <span>Inspect Profile</span>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-hint">
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-purple)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Works for Public &amp; Private DP</span>
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-purple)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Master 1080p Resolution</span>
+                        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--brand-purple)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> No Login Required</span>
+                    </div>
+
+                    <!-- RESULTS CONTAINER -->
+                    <div class="results-wrapper">
+                        <div id="skeletonCard" class="skeleton-card">
+                            <div class="skeleton-thumb"></div>
+                            <div class="skeleton-content">
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line medium"></div>
+                                <div class="skeleton-line"></div>
+                            </div>
+                        </div>
+
+                        <!-- Active Result Profile Card -->
+                        <div id="profileCard" class="media-card profile-card" style="display: none;">
+                            <div class="profile-grid">
+                                <div class="profile-avatar-wrap">
+                                    <img id="profileAvatarImg" src="" alt="Avatar" class="profile-avatar-img" referrerpolicy="no-referrer">
+                                    <div class="profile-avatar-badge">1080p HD</div>
+                                </div>
+                                <div class="profile-details">
+                                    <div class="profile-header-line">
+                                        <h3 id="profileFullName" class="profile-name">Full Name</h3>
+                                        <span id="profileVerifiedBadge" class="verified-badge" title="Verified Creator" style="display: none;">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="#3B82F6"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </span>
+                                    </div>
+                                    <div class="profile-handle-row">
+                                        <span id="profileUsername" class="profile-handle">@username</span>
+                                        <span id="profileStatusBadge" class="media-author-badge">Public Account</span>
+                                    </div>
+                                    <p class="profile-subtext">Verified Meta Account • No Login Required to Inspect</p>
+                                    <div class="profile-actions-grid">
+                                        <button type="button" id="profileViewStoriesBtn" class="btn-download-primary">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                            <span>View Stories Anonymously</span>
+                                        </button>
+                                        <a href="#" id="profileDownloadDpBtn" class="btn-action-secondary" download="profile_dp_1080p.jpg">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                            <span>Download HD DP</span>
+                                        </a>
+                                        <button type="button" id="profileCopyLinkBtn" class="btn-action-secondary">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                            <span>Copy Profile Link</span>
+                                        </button>
+                                        <a href="#" id="profileOpenIgBtn" class="btn-action-secondary" target="_blank" rel="noopener noreferrer">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                            <span>Open on Instagram</span>
+                                        </a>
+                                    </div>
+                                    <div class="reset-action" style="margin-top: 18px;">
+                                        <button type="button" class="btn-reset reset-trigger">Inspect another profile</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fallback Cards for App.js -->
+                        <div id="mediaCard" style="display: none;"></div>
+                        <div id="dpCard" style="display: none;"></div>
+                        <div id="storyCard" style="display: none;"></div>
+                        <div id="hashtagCard" style="display: none;"></div>
+                        <div id="privateAlertCard" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CLEAN SAAS FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <a href="index.html" class="brand-link">
+                        <img src="assets/images/logo.png" alt="Toolsera" class="brand-logo-img">
+                    </a>
+                    <p>Toolsera is an independent digital media utility engineered for high-quality, watermark-free downloads and anonymous story viewing.</p>
+                    <div class="dev-badge-wrap">
+                        <span class="dev-badge">Developed by <strong>Adeel Ahmad</strong></span>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Instagram Tools</h4>
+                    <ul>
+                        <li><a href="story-viewer.html">Anonymous Story Viewer</a></li>
+                        <li><a href="profile-viewer.html">Profile Inspector &amp; DP</a></li>
+                        <li><a href="reels-downloader.html">Reels Downloader</a></li>
+                        <li><a href="hashtag-generator.html">Hashtag Generator</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources &amp; Legal</h4>
+                    <ul>
+                        <li><a href="pricing.html">Pricing ($0 Free)</a></li>
+                        <li><a href="faq.html">FAQ &amp; Help</a></li>
+                        <li><a href="about.html">About Toolsera</a></li>
+                        <li><a href="contact.html">Contact Support</a></li>
+                        <li><a href="disclaimer.html">Legal Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-flex">
+                    <p class="copyright-text">&copy; 2026 <strong>Toolsera</strong>. All rights reserved.</p>
+                    <p class="developer-credit-text">Crafted with precision by <strong>Adeel Ahmad</strong></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileTab = document.getElementById('tabProfile');
+            if (profileTab) profileTab.click();
+        });
+    </script>
+</body>
+</html>

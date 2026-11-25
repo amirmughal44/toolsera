@@ -849,6 +849,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // FAQ Accordion Interactivity
+    document.querySelectorAll('.faq-item .faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.faq-item');
+            const isActive = item.classList.contains('active');
+            const parent = item.parentElement;
+            if (parent) {
+                parent.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+            }
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        });
+    });
+
     // Reset Triggers
     document.querySelectorAll('.btn-reset, .reset-trigger').forEach(btn => {
         btn.addEventListener('click', () => {
