@@ -203,6 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                 urlInput.placeholder = 'Enter @username (e.g. @cristiano) or story link...';
                 submitBtn.querySelector('span').textContent = 'View Stories';
+            } else if (currentMode === 'post') {
+                if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
+                urlInput.placeholder = 'Paste Instagram post link or @username to view posts...';
+                submitBtn.querySelector('span').textContent = 'View Posts';
             } else if (currentMode === 'profile') {
                 if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                 urlInput.placeholder = 'Enter @username (e.g. @cristiano) to inspect profile...';
@@ -364,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 1. Render Video Card
+    // 1. Render Media Card (Video / Reel / Photo Post)
     function renderMediaCard(data) {
         posterImg.referrerPolicy = 'no-referrer';
         const initialThumb = data.thumbnail || data.thumbnail_proxy || data.thumbnail_raw || 'assets/images/logo.png';
@@ -380,23 +384,47 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         authorText.textContent = data.author || '@instagram_creator';
-        captionText.textContent = data.caption || data.title || 'High quality Instagram video';
+        captionText.textContent = data.caption || data.title || 'High quality Instagram media';
 
-        const streamUrl = data.download_stream_url || ('api/download.php?v=' + encodeURIComponent(btoa(data.video_url)));
-        downloadVideo.href = streamUrl;
-        downloadVideo.setAttribute('download', 'toolsera_instagram_video.mp4');
+        const isPhoto = (data.media_mode === 'photo' || data.type === 'photo');
+        const durationBadge = document.getElementById('durationBadge');
+        if (durationBadge) {
+            durationBadge.textContent = isPhoto ? '1080p Photo' : '1080p MP4';
+        }
 
-        downloadVideo.onclick = async (e) => {
-            e.preventDefault();
-            downloadDirectBlob(streamUrl, data.direct_download_url || data.video_url, 'toolsera_instagram_video.mp4', downloadVideo);
-        };
+        if (isPhoto) {
+            const photoUrl = data.photo_url || initialThumb;
+            downloadVideo.href = photoUrl;
+            const btnSpan = downloadVideo.querySelector('span');
+            if (btnSpan) btnSpan.textContent = 'Download Photo (1080p Full HD)';
+            downloadVideo.setAttribute('download', `${data.id || 'instagram'}_photo_1080p.jpg`);
+            downloadVideo.onclick = async (e) => {
+                e.preventDefault();
+                downloadDirectBlob(photoUrl, photoUrl, `${data.id || 'instagram'}_photo_1080p.jpg`, downloadVideo);
+            };
+            if (downloadAudio) downloadAudio.style.display = 'none';
+        } else {
+            const streamUrl = data.download_stream_url || ('api/download.php?v=' + encodeURIComponent(btoa(data.video_url || '')));
+            downloadVideo.href = streamUrl;
+            const btnSpan = downloadVideo.querySelector('span');
+            if (btnSpan) btnSpan.textContent = 'Download Video (1080p MP4)';
+            downloadVideo.setAttribute('download', 'toolsera_instagram_video.mp4');
 
-        downloadAudio.href = streamUrl + '&type=audio';
-        downloadAudio.setAttribute('download', 'toolsera_audio.mp3');
-        downloadAudio.onclick = async (e) => {
-            e.preventDefault();
-            downloadDirectBlob(streamUrl + '&type=audio', null, 'toolsera_audio.mp3', downloadAudio);
-        };
+            downloadVideo.onclick = async (e) => {
+                e.preventDefault();
+                downloadDirectBlob(streamUrl, data.direct_download_url || data.video_url, 'toolsera_instagram_video.mp4', downloadVideo);
+            };
+
+            if (downloadAudio) {
+                downloadAudio.style.display = 'inline-flex';
+                downloadAudio.href = streamUrl + '&type=audio';
+                downloadAudio.setAttribute('download', 'toolsera_audio.mp3');
+                downloadAudio.onclick = async (e) => {
+                    e.preventDefault();
+                    downloadDirectBlob(streamUrl + '&type=audio', null, 'toolsera_audio.mp3', downloadAudio);
+                };
+            }
+        }
 
         mediaCard.style.display = 'block';
         mediaCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -436,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dpCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    // 3. Render Profile Inspector Card
+    // 3. Render Profile Inspector Card with Multi-Tab Feed Explorer
     function renderProfileCard(data) {
         profileAvatarImg.referrerPolicy = 'no-referrer';
         const dpSrc = data.thumbnail || data.dp_url || 'assets/images/logo.png';
@@ -450,45 +478,173 @@ document.addEventListener('DOMContentLoaded', () => {
             profileStatusBadge.style.color = data.is_private ? '#B91C1C' : '#15803D';
         }
 
-        // View Stories Button
-        if (profileViewStories) {
-            profileViewStories.onclick = () => {
-                urlInput.value = data.username.replace('@', '');
-                const storyTab = document.getElementById('tabStory');
-                if (storyTab) storyTab.click();
-                handleExtraction();
-            };
-        }
-
-        // Download DP Button
-        if (profileDownloadDp) {
-            profileDownloadDp.href = data.dp_url;
-            profileDownloadDp.onclick = (e) => {
-                e.preventDefault();
-                downloadDirectBlob(dpSrc, data.dp_url, `${data.username.replace('@','')}_dp_1080p.jpg`, profileDownloadDp);
-            };
-        }
-
-        // Copy Profile Link
-        if (profileCopyLink) {
-            profileCopyLink.onclick = async () => {
-                const igUrl = `https://www.instagram.com/${data.username.replace('@','')}/`;
-                try {
-                    await navigator.clipboard.writeText(igUrl);
-                    showToast('Profile link copied!', 'success');
-                } catch (e) {
-                    showToast('Could not copy link', 'error');
-                }
-            };
-        }
-
-        // Open IG Link
-        if (profileOpenIg) {
-            profileOpenIg.href = `https://www.instagram.com/${data.username.replace('@','')}/`;
-        }
+        // Render Feed Tabs Content
+        setupProfileFeedTabs(data);
 
         profileCard.style.display = 'block';
         profileCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function setupProfileFeedTabs(data) {
+        const storiesCount = data.stories ? data.stories.length : 0;
+        const postsList = data.posts || [];
+        const reelsList = data.reels || [];
+        const highlightsList = data.highlights || [];
+
+        // Tab count labels
+        const storiesBadge = document.getElementById('profileStoriesCount');
+        if (storiesBadge) storiesBadge.textContent = storiesCount;
+        const postsBadge = document.getElementById('profilePostsCount');
+        if (postsBadge) postsBadge.textContent = postsList.length;
+        const reelsBadge = document.getElementById('profileReelsCount');
+        if (reelsBadge) reelsBadge.textContent = reelsList.length;
+
+        // Populate Stories Panel
+        const storiesContainer = document.getElementById('feedStoriesContainer');
+        if (storiesContainer) {
+            storiesContainer.innerHTML = '';
+            if (data.is_private) {
+                storiesContainer.innerHTML = `
+                    <div class="feed-empty-state">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <h4>Private Account Stories Protected</h4>
+                        <p>Instagram protects active stories for private accounts. You can view their uncompressed 1080p DP anytime.</p>
+                    </div>
+                `;
+            } else if (storiesCount === 0) {
+                storiesContainer.innerHTML = `
+                    <div class="feed-empty-state">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <h4>No Active Stories Right Now</h4>
+                        <p>@${data.username.replace('@','')} hasn't posted a story in the last 24 hours. Explore their posts & reels below!</p>
+                    </div>
+                `;
+            } else {
+                data.stories.forEach((story, idx) => {
+                    const card = document.createElement('div');
+                    card.className = 'feed-media-card';
+                    card.innerHTML = `
+                        <div class="feed-thumb-wrap">
+                            <img src="${story.preview_proxy || story.url}" alt="Story ${idx+1}" class="feed-thumb-img" referrerpolicy="no-referrer">
+                            <span class="feed-type-pill">${story.type === 'video' ? '🎬 Story Video' : '📸 Story Photo'}</span>
+                        </div>
+                        <div class="feed-card-actions">
+                            <button type="button" class="btn-feed-play" data-idx="${idx}">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>Watch Story</span>
+                            </button>
+                            <a href="${story.download_url}" download="story_${idx+1}.jpg" class="btn-feed-download" title="Download HD">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </a>
+                        </div>
+                    `;
+                    card.querySelector('.btn-feed-play').onclick = () => {
+                        activeStories = data.stories;
+                        openStoryLightbox(idx, data.username);
+                    };
+                    storiesContainer.appendChild(card);
+                });
+            }
+        }
+
+        // Populate Posts Panel
+        const postsContainer = document.getElementById('feedPostsContainer');
+        if (postsContainer) {
+            postsContainer.innerHTML = '';
+            postsList.forEach((post, idx) => {
+                const card = document.createElement('div');
+                card.className = 'feed-media-card';
+                card.innerHTML = `
+                    <div class="feed-thumb-wrap">
+                        <img src="${post.thumbnail}" alt="Post ${idx+1}" class="feed-thumb-img" referrerpolicy="no-referrer">
+                        <span class="feed-type-pill">📸 Photo</span>
+                    </div>
+                    <div class="feed-card-info">
+                        <p class="feed-caption">${post.caption}</p>
+                        <div class="feed-metrics">
+                            <span>❤️ ${post.likes}</span>
+                            <span>💬 ${post.comments}</span>
+                            <span>⏱️ ${post.time}</span>
+                        </div>
+                    </div>
+                    <div class="feed-card-actions">
+                        <a href="${post.thumbnail}" download="${data.username.replace('@','')}_post_${idx+1}_1080p.jpg" class="btn-feed-download-full">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Download 1080p Photo</span>
+                        </a>
+                    </div>
+                `;
+                postsContainer.appendChild(card);
+            });
+        }
+
+        // Populate Reels Panel
+        const reelsContainer = document.getElementById('feedReelsContainer');
+        if (reelsContainer) {
+            reelsContainer.innerHTML = '';
+            reelsList.forEach((reel, idx) => {
+                const card = document.createElement('div');
+                card.className = 'feed-media-card';
+                card.innerHTML = `
+                    <div class="feed-thumb-wrap">
+                        <img src="${reel.thumbnail}" alt="Reel ${idx+1}" class="feed-thumb-img" referrerpolicy="no-referrer">
+                        <span class="feed-type-pill">🎬 ${reel.duration}</span>
+                    </div>
+                    <div class="feed-card-info">
+                        <p class="feed-caption">${reel.caption}</p>
+                        <div class="feed-metrics">
+                            <span>👁️ ${reel.views}</span>
+                            <span>❤️ ${reel.likes}</span>
+                        </div>
+                    </div>
+                    <div class="feed-card-actions">
+                        <a href="${reel.thumbnail}" download="${data.username.replace('@','')}_reel_${idx+1}_1080p.mp4" class="btn-feed-download-full">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Download 1080p Reel</span>
+                        </a>
+                    </div>
+                `;
+                reelsContainer.appendChild(card);
+            });
+        }
+
+        // Populate Highlights Panel
+        const highlightsContainer = document.getElementById('feedHighlightsContainer');
+        if (highlightsContainer) {
+            highlightsContainer.innerHTML = '';
+            highlightsList.forEach((hl) => {
+                const item = document.createElement('div');
+                item.className = 'highlight-bubble-card';
+                item.innerHTML = `
+                    <div class="highlight-ring">
+                        <img src="${hl.cover}" alt="${hl.title}" class="highlight-cover-img" referrerpolicy="no-referrer">
+                    </div>
+                    <span class="highlight-title">${hl.title}</span>
+                    <span class="highlight-count">${hl.count}</span>
+                `;
+                highlightsContainer.appendChild(item);
+            });
+        }
+
+        // Tab Switching Click Logic
+        const tabBtns = document.querySelectorAll('.feed-tab-btn');
+        const panels = document.querySelectorAll('.feed-panel');
+        tabBtns.forEach(btn => {
+            btn.onclick = () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const target = btn.dataset.tab;
+                const activePanel = document.getElementById(`feedPanel_${target}`);
+                if (activePanel) activePanel.classList.add('active');
+            };
+        });
+
+        // Auto-switch tab if requested
+        if (data.active_tab) {
+            const targetBtn = document.querySelector(`.feed-tab-btn[data-tab="${data.active_tab}"]`);
+            if (targetBtn) targetBtn.click();
+        }
     }
 
     // 4. Render Hashtags Card
@@ -861,6 +1017,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isActive) {
                 item.classList.add('active');
             }
+        });
+    });
+
+    // Video Reviews Carousel Navigation
+    const reviewsTrack = document.getElementById('reviewsCarouselTrack');
+    const reviewsNextBtn = document.getElementById('reviewsNextBtn');
+    const reviewsPrevBtn = document.getElementById('reviewsPrevBtn');
+    if (reviewsNextBtn && reviewsTrack) {
+        reviewsNextBtn.addEventListener('click', () => {
+            reviewsTrack.scrollBy({ left: 320, behavior: 'smooth' });
+        });
+    }
+    if (reviewsPrevBtn && reviewsTrack) {
+        reviewsPrevBtn.addEventListener('click', () => {
+            reviewsTrack.scrollBy({ left: -320, behavior: 'smooth' });
+        });
+    }
+
+    // Video Review Cards Click Interactivity
+    document.querySelectorAll('.review-video-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const quote = card.dataset.quote || 'Toolsera allows me to research creators and watch stories with 100% privacy!';
+            const author = card.dataset.author || 'Verified Creator';
+            showToast(`"${quote}" — ${author}`, 'info');
+        });
+    });
+
+    // Pricing Features Table Interactive Toggles
+    document.querySelectorAll('.pricing-feat-row').forEach(row => {
+        row.addEventListener('click', () => {
+            row.classList.toggle('expanded');
         });
     });
 

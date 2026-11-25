@@ -5,6 +5,7 @@
     { "source": "/api/download.php", "destination": "/api/download" },
     { "source": "/api/image_proxy.php", "destination": "/api/image_proxy" },
     { "source": "/story-viewer", "destination": "/story-viewer.html" },
+    { "source": "/posts-viewer", "destination": "/posts-viewer.html" },
     { "source": "/profile-viewer", "destination": "/profile-viewer.html" },
     { "source": "/reels-downloader", "destination": "/reels-downloader.html" },
     { "source": "/hashtag-generator", "destination": "/hashtag-generator.html" },
