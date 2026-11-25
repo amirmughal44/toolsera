@@ -1,0 +1,30 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Redirect trailing slash
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [R=301,L]
+
+    # Clean URLs for Pages
+    RewriteRule ^reels-downloader$ reels-downloader.html [L]
+    RewriteRule ^posts-viewer$ posts-viewer.html [L]
+    RewriteRule ^story-viewer$ story-viewer.html [L]
+    RewriteRule ^profile-viewer$ profile-viewer.html [L]
+    RewriteRule ^hashtag-generator$ hashtag-generator.html [L]
+    RewriteRule ^pricing$ pricing.html [L]
+    RewriteRule ^faq$ faq.html [L]
+    RewriteRule ^about$ about.html [L]
+    RewriteRule ^contact$ contact.html [L]
+    RewriteRule ^privacy$ privacy.html [L]
+    RewriteRule ^terms$ terms.html [L]
+    RewriteRule ^disclaimer$ disclaimer.html [L]
+    RewriteRule ^admin/feedback$ admin/feedback.html [L]
+
+    # Clean URLs for API endpoints
+    RewriteRule ^api/extract$ api/extract.php [L]
+    RewriteRule ^api/feedback$ api/feedback.php [L]
+    RewriteRule ^api/download$ api/download.php [L]
+    RewriteRule ^api/image_proxy$ api/image_proxy.php [L]
+</IfModule>
