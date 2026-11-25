@@ -39,10 +39,41 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
             '/about.php': '/about.html',
             '/contact.php': '/contact.html',
             '/disclaimer.php': '/disclaimer.html',
+            '/privacy': '/privacy.html',
+            '/privacy.html': '/privacy.html',
+            '/terms': '/terms.html',
+            '/terms.html': '/terms.html',
+            '/admin': '/admin/feedback.html',
+            '/admin/feedback': '/admin/feedback.html',
+            '/admin/feedback.html': '/admin/feedback.html',
         }
         if self.path in clean_routes:
             self.path = clean_routes[self.path]
             return super().do_GET()
+
+        # Feedback Admin GET API
+        if self.path.startswith('/api/admin/feedback') or '/api/feedback?admin=1' in self.path:
+            try:
+                from api.feedback import handler as FeedbackHandler
+                h = FeedbackHandler.__new__(FeedbackHandler)
+                h.request = self.request
+                h.client_address = self.client_address
+                h.server = self.server
+                h.rfile = self.rfile
+                h.wfile = self.wfile
+                h.headers = self.headers
+                h.path = self.path
+                h.command = 'GET'
+                h.request_version = self.request_version
+                h.requestline = f'{self.command} {self.path} {self.request_version}'
+                h.close_connection = self.close_connection
+                h.do_GET()
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'message': str(e)}).encode('utf-8'))
+            return
 
         # Image proxy endpoint
         if self.path.startswith('/api/image_proxy.php'):
@@ -59,8 +90,8 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
         self.end_headers()
 
     def do_POST(self):
@@ -87,7 +118,7 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({'success': False, 'message': str(e)}).encode('utf-8'))
             return
 
-        if self.path in ['/api/feedback.php', '/api/feedback']:
+        if self.path in ['/api/feedback.php', '/api/feedback'] or self.path.startswith('/api/admin/feedback'):
             try:
                 from api.feedback import handler as FeedbackHandler
                 h = FeedbackHandler.__new__(FeedbackHandler)
@@ -110,6 +141,35 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({'success': False, 'message': str(e)}).encode('utf-8'))
             return
 
+        self.send_response(404)
+        self.end_headers()
+
+    def do_PATCH(self):
+        return self.do_POST()
+
+    def do_DELETE(self):
+        if self.path.startswith('/api/admin/feedback'):
+            try:
+                from api.feedback import handler as FeedbackHandler
+                h = FeedbackHandler.__new__(FeedbackHandler)
+                h.request = self.request
+                h.client_address = self.client_address
+                h.server = self.server
+                h.rfile = self.rfile
+                h.wfile = self.wfile
+                h.headers = self.headers
+                h.path = self.path
+                h.command = 'DELETE'
+                h.request_version = self.request_version
+                h.requestline = f'{self.command} {self.path} {self.request_version}'
+                h.close_connection = self.close_connection
+                h.do_DELETE()
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'message': str(e)}).encode('utf-8'))
+            return
         self.send_response(404)
         self.end_headers()
 

@@ -1052,7 +1052,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // User Feedback & Issue Reporting Form Handler
     const feedbackForm = document.getElementById('feedbackForm');
     const ratingPills = document.querySelectorAll('.rating-pill');
+    const starRatingBtns = document.querySelectorAll('.star-rating-btn');
+    const feedbackMsgInput = document.getElementById('feedbackMessage');
+    const charCountEl = document.getElementById('feedbackCharCount');
+    const successBanner = document.getElementById('feedbackSuccessBanner');
     let selectedFeedbackRating = 5;
+
+    // Star rating buttons handler
+    if (starRatingBtns.length > 0) {
+        starRatingBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                starRatingBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedFeedbackRating = parseInt(btn.dataset.rating || '5', 10);
+                const ratingHidden = document.getElementById('feedbackRatingVal');
+                if (ratingHidden) ratingHidden.value = selectedFeedbackRating;
+            });
+        });
+    }
 
     if (ratingPills.length > 0) {
         ratingPills.forEach(pill => {
@@ -1064,27 +1081,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Dynamic character counter
+    if (feedbackMsgInput && charCountEl) {
+        feedbackMsgInput.addEventListener('input', () => {
+            const currentLen = feedbackMsgInput.value.length;
+            charCountEl.textContent = `${currentLen} / 1000 characters`;
+            if (currentLen > 900) {
+                charCountEl.style.color = '#DC2626';
+            } else {
+                charCountEl.style.color = 'var(--text-muted)';
+            }
+        });
+    }
+
     if (feedbackForm) {
         feedbackForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const nameInput = document.getElementById('feedbackName');
             const emailInput = document.getElementById('feedbackEmail');
+            const subjectInput = document.getElementById('feedbackSubject');
             const categoryInput = document.getElementById('feedbackCategory');
             const messageInput = document.getElementById('feedbackMessage');
             const submitBtnEl = document.getElementById('feedbackSubmitBtn');
 
             const message = messageInput ? messageInput.value.trim() : '';
-            if (!message) {
-                showToast('Please type your feedback or issue description.', 'error');
+            if (!message || message.length < 5) {
+                showToast('Please provide your feedback details (at least 5 characters).', 'error');
                 if (messageInput) messageInput.focus();
                 return;
             }
 
+            const subject = subjectInput && subjectInput.value.trim() ? subjectInput.value.trim() : 'General Feedback';
+
             const payload = {
-                name: nameInput ? nameInput.value.trim() : '',
+                name: nameInput ? nameInput.value.trim() : 'Anonymous Visitor',
                 email: emailInput ? emailInput.value.trim() : '',
-                category: categoryInput ? categoryInput.value : 'general',
+                subject: subject,
+                category: categoryInput ? categoryInput.value : 'reel_downloader',
                 rating: selectedFeedbackRating,
                 message: message
             };
@@ -1097,19 +1131,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
                         <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
                     </svg>
-                    <span>Sending to Adeel...</span>
+                    <span>Sending Feedback...</span>
                 `;
             }
 
+            const confirmMsg = 'Thank you for helping us improve TOOLSERA! Your feedback has been received.';
+
             try {
-                let res = await fetch('/api/feedback.php', {
+                let res = await fetch('/api/feedback', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 if (!res.ok) {
-                    res = await fetch('/api/feedback', {
+                    res = await fetch('/api/feedback.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -1117,19 +1153,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const data = await res.json();
-                if (data && data.success) {
-                    showToast(data.message || 'Thank you! Your feedback has been sent directly to Adeel Ahmad.', 'success');
-                    feedbackForm.reset();
-                    ratingPills.forEach(p => p.classList.remove('active'));
-                    const pill5 = document.querySelector('.rating-pill[data-rating="5"]');
-                    if (pill5) pill5.classList.add('active');
-                    selectedFeedbackRating = 5;
+                const displayMsg = (data && data.message) ? data.message : confirmMsg;
+
+                if (successBanner) {
+                    const msgSpan = document.getElementById('feedbackSuccessMsg');
+                    if (msgSpan) msgSpan.textContent = displayMsg;
+                    successBanner.style.display = 'flex';
+                    successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        successBanner.style.display = 'none';
+                    }, 9000);
                 } else {
-                    showToast((data && data.message) || 'Submission received! Thank you for helping us improve.', 'success');
+                    showToast(displayMsg, 'success');
                 }
-            } catch (err) {
-                showToast('Thank you! Your feedback has been recorded for developer Adeel Ahmad.', 'success');
+
                 feedbackForm.reset();
+                if (charCountEl) charCountEl.textContent = '0 / 1000 characters';
+                
+                // Reset rating to 5
+                starRatingBtns.forEach(b => b.classList.remove('active'));
+                const star5 = document.querySelector('.star-rating-btn[data-rating="5"]');
+                if (star5) star5.classList.add('active');
+                
+                ratingPills.forEach(p => p.classList.remove('active'));
+                const pill5 = document.querySelector('.rating-pill[data-rating="5"]');
+                if (pill5) pill5.classList.add('active');
+                selectedFeedbackRating = 5;
+
+            } catch (err) {
+                if (successBanner) {
+                    successBanner.style.display = 'flex';
+                    successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    showToast(confirmMsg, 'success');
+                }
+                feedbackForm.reset();
+                if (charCountEl) charCountEl.textContent = '0 / 1000 characters';
             } finally {
                 if (submitBtnEl) {
                     submitBtnEl.disabled = false;

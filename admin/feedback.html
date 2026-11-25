@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolsera - Feedback Management Center (Admin)</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        .admin-auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .admin-auth-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 36px 32px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+        .admin-auth-icon {
+            width: 56px;
+            height: 56px;
+            background: #EFF6FF;
+            color: var(--brand-purple);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+        }
+        .admin-nav-bar {
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 16px 0;
+        }
+        .admin-nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-badge {
+            background: #EFF6FF;
+            color: #1D4ED8;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #BFDBFE;
+        }
+        .rating-stars {
+            color: #F59E0B;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        .cat-tag {
+            background: #F1F5F9;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+        .msg-cell {
+            max-width: 320px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #334155;
+            word-break: break-word;
+        }
+        .subject-bold {
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 4px;
+        }
+        .user-meta-sub {
+            font-size: 11.5px;
+            color: #64748B;
+            margin-top: 2px;
+        }
+        .empty-admin-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748B;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Auth Protection Modal -->
+    <div id="authModal" class="admin-auth-overlay" style="display: none;">
+        <div class="admin-auth-card">
+            <div class="admin-auth-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <h3 style="font-size: 20px; font-weight: 800; color: #0F172A; margin-bottom: 8px;">Admin Feedback Portal</h3>
+            <p style="font-size: 13.5px; color: #64748B; margin-bottom: 24px;">Please authenticate with your Toolsera Admin Token to review visitor submissions.</p>
+            <form id="authForm">
+                <div style="margin-bottom: 16px;">
+                    <input type="password" id="adminTokenInput" class="feedback-input" placeholder="Enter Admin Access Token" required autocomplete="current-password" style="text-align: center;">
+                </div>
+                <button type="submit" class="btn-download-primary" style="width: 100%;">
+                    <span>Unlock Dashboard</span>
+                </button>
+            </form>
+            <p id="authErrorMsg" style="color: #DC2626; font-size: 12.5px; margin-top: 12px; display: none;"></p>
+        </div>
+    </div>
+
+    <!-- Top Admin Bar -->
+    <header class="admin-nav-bar">
+        <div class="container admin-nav-inner">
+            <div class="admin-brand">
+                <a href="../index.html" class="brand-link">
+                    <img src="../assets/images/logo.png" alt="Toolsera" style="height: 32px;">
+                </a>
+                <span class="admin-badge">Feedback Center</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="../index.html" class="admin-action-btn" target="_blank">View Live Website ↗</a>
+                <button type="button" id="logoutBtn" class="admin-action-btn">Log Out</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-page-wrap">
+        <div class="container">
+            <!-- Header Row -->
+            <div class="admin-header-row">
+                <div>
+                    <h1 class="admin-title">Visitor Feedback &amp; Issue Reports</h1>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">Review submissions directly from visitors to continuously improve Toolsera.</p>
+                </div>
+                <div>
+                    <button type="button" id="refreshBtn" class="admin-action-btn" style="padding: 8px 16px; background: #FFFFFF; font-weight: 700;">
+                        🔄 Refresh Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats KPI Grid -->
+            <div class="admin-stats-grid">
+                <div class="admin-stat-card">
+                    <div class="admin-stat-label">Total Submissions</div>
+                    <div id="statTotal" class="admin-stat-val">0</div>
+                </div>
+                <div class="admin-stat-card" style="border-left: 4px solid #3B82F6;">
+                    <div class="admin-stat-label">New / Pending</div>
+                    <div id="statNew" class="admin-stat-val" style="color: #1D4ED8;">0</div>
+                </div>
+                <div class="admin-stat-card" style="border-left: 4px solid #F59E0B;">
+                    <div class="admin-stat-label">Under Review</div>
+                    <div id="statReviewed" class="admin-stat-val" style="color: #B45309;">0</div>
+                </div>
+                <div class="admin-stat-card" style="border-left: 4px solid #10B981;">
+                    <div class="admin-stat-label">Resolved / Addressed</div>
+                    <div id="statResolved" class="admin-stat-val" style="color: #047857;">0</div>
+                </div>
+            </div>
+
+            <!-- Toolbar (Filter Tabs, Search, Category) -->
+            <div class="admin-toolbar">
+                <div class="admin-tabs" id="statusTabs">
+                    <button type="button" class="admin-tab-btn active" data-status="all">All Feedback</button>
+                    <button type="button" class="admin-tab-btn" data-status="New">New</button>
+                    <button type="button" class="admin-tab-btn" data-status="Reviewed">Reviewed</button>
+                    <button type="button" class="admin-tab-btn" data-status="Resolved">Resolved</button>
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <select id="filterCategory" class="feedback-select" style="width: auto; padding: 7px 12px; font-size: 13px;">
+                        <option value="all">All Categories</option>
+                        <option value="improvement">💡 Improvement</option>
+                        <option value="bug">🐛 Bug Report</option>
+                        <option value="reel_downloader">📹 Reels / Video</option>
+                        <option value="posts_viewer">🖼️ Posts Viewer</option>
+                        <option value="story_viewer">👁️ Story Viewer</option>
+                        <option value="profile_dp">👤 Profile DP</option>
+                        <option value="other">✨ Other</option>
+                    </select>
+
+                    <input type="text" id="adminSearchInput" class="admin-search-input" placeholder="Search message, user, or ID...">
+                </div>
+            </div>
+
+            <!-- Feedback Table -->
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">Date &amp; ID</th>
+                            <th style="width: 180px;">Visitor</th>
+                            <th style="width: 130px;">Category</th>
+                            <th style="width: 100px;">Rating</th>
+                            <th>Feedback Details</th>
+                            <th style="width: 110px;">Status</th>
+                            <th style="width: 160px; text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-admin-state">Loading submissions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function() {
+            const STORAGE_KEY = 'toolsera_admin_token';
+            let allFeedbacks = [];
+            let currentStatus = 'all';
+            let currentCategory = 'all';
+            let currentSearch = '';
+
+            const authModal = document.getElementById('authModal');
+            const authForm = document.getElementById('authForm');
+            const tokenInput = document.getElementById('adminTokenInput');
+            const authErrorMsg = document.getElementById('authErrorMsg');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const tableBody = document.getElementById('feedbackTableBody');
+            const searchInput = document.getElementById('adminSearchInput');
+            const categorySelect = document.getElementById('filterCategory');
+            const statusTabs = document.getElementById('statusTabs');
+
+            function getToken() {
+                return sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY) || '';
+            }
+
+            function setToken(tok) {
+                sessionStorage.setItem(STORAGE_KEY, tok);
+            }
+
+            function checkAuth() {
+                const tok = getToken();
+                if (!tok) {
+                    authModal.style.display = 'flex';
+                } else {
+                    authModal.style.display = 'none';
+                    fetchFeedbackData();
+                }
+            }
+
+            authForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const tok = tokenInput.value.trim();
+                if (tok) {
+                    setToken(tok);
+                    authModal.style.display = 'none';
+                    fetchFeedbackData();
+                }
+            });
+
+            logoutBtn.addEventListener('click', () => {
+                sessionStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            });
+
+            refreshBtn.addEventListener('click', fetchFeedbackData);
+
+            async function fetchFeedbackData() {
+                tableBody.innerHTML = `<tr><td colspan="7" class="empty-admin-state">Refreshing feedback entries...</td></tr>`;
+                const tok = getToken();
+                try {
+                    const res = await fetch('/api/admin/feedback', {
+                        headers: {
+                            'Authorization': `Bearer ${tok}`
+                        }
+                    });
+
+                    if (res.status === 401) {
+                        sessionStorage.removeItem(STORAGE_KEY);
+                        authModal.style.display = 'flex';
+                        authErrorMsg.textContent = 'Invalid token. Please check and try again.';
+                        authErrorMsg.style.display = 'block';
+                        return;
+                    }
+
+                    const data = await res.json();
+                    if (data.success) {
+                        allFeedbacks = data.feedbacks || [];
+                        updateStats(data.stats || {});
+                        renderTable();
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="7" class="empty-admin-state" style="color: #DC2626;">Error: ${data.message}</td></tr>`;
+                    }
+                } catch (err) {
+                    // Fallback to PHP endpoint if python dev isn't on edge
+                    try {
+                        const fallbackRes = await fetch(`/api/feedback.php?admin=1&token=${encodeURIComponent(tok)}`);
+                        const fallbackData = await fallbackRes.json();
+                        if (fallbackData.success) {
+                            allFeedbacks = fallbackData.feedbacks || [];
+                            updateStats(fallbackData.stats || {});
+                            renderTable();
+                            return;
+                        }
+                    } catch (e2) {}
+                    tableBody.innerHTML = `<tr><td colspan="7" class="empty-admin-state" style="color: #DC2626;">Failed to connect to feedback API: ${err.message}</td></tr>`;
+                }
+            }
+
+            function updateStats(stats) {
+                document.getElementById('statTotal').textContent = stats.total || allFeedbacks.length;
+                document.getElementById('statNew').textContent = stats.new || allFeedbacks.filter(f => f.status === 'New').length;
+                document.getElementById('statReviewed').textContent = stats.reviewed || allFeedbacks.filter(f => f.status === 'Reviewed').length;
+                document.getElementById('statResolved').textContent = stats.resolved || allFeedbacks.filter(f => f.status === 'Resolved').length;
+            }
+
+            function renderTable() {
+                const query = currentSearch.toLowerCase().trim();
+                const filtered = allFeedbacks.filter(fb => {
+                    const matchStatus = (currentStatus === 'all') || (fb.status === currentStatus);
+                    const matchCategory = (currentCategory === 'all') || (fb.category === currentCategory);
+                    const matchSearch = !query || 
+                        (fb.message && fb.message.toLowerCase().includes(query)) ||
+                        (fb.subject && fb.subject.toLowerCase().includes(query)) ||
+                        (fb.name && fb.name.toLowerCase().includes(query)) ||
+                        (fb.email && fb.email.toLowerCase().includes(query)) ||
+                        (fb.id && fb.id.toLowerCase().includes(query));
+                    return matchStatus && matchCategory && matchSearch;
+                });
+
+                if (filtered.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="7" class="empty-admin-state">No feedback entries match your active filters.</td></tr>`;
+                    return;
+                }
+
+                tableBody.innerHTML = filtered.map(fb => {
+                    const statusClass = fb.status === 'Resolved' ? 'badge-status-resolved' : (fb.status === 'Reviewed' ? 'badge-status-reviewed' : 'badge-status-new');
+                    const stars = '★'.repeat(fb.rating || 5) + '☆'.repeat(5 - (fb.rating || 5));
+                    
+                    return `
+                        <tr data-id="${fb.id}">
+                            <td>
+                                <strong style="font-size: 12px; color: #0F172A;">${escapeHtml(fb.id || 'N/A')}</strong>
+                                <div class="user-meta-sub">${escapeHtml(fb.date || '')}</div>
+                            </td>
+                            <td>
+                                <strong style="color: #0F172A;">${escapeHtml(fb.name || 'Anonymous')}</strong>
+                                <div class="user-meta-sub">${escapeHtml(fb.email || 'No email')}</div>
+                            </td>
+                            <td>
+                                <span class="cat-tag">${escapeHtml(fb.category || 'general')}</span>
+                            </td>
+                            <td>
+                                <span class="rating-stars" title="${fb.rating || 5}/5 Stars">${stars}</span>
+                            </td>
+                            <td class="msg-cell">
+                                <div class="subject-bold">${escapeHtml(fb.subject || 'Feedback')}</div>
+                                <div>${escapeHtml(fb.message || '')}</div>
+                            </td>
+                            <td>
+                                <span class="${statusClass}">${escapeHtml(fb.status || 'New')}</span>
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                                    ${fb.status !== 'Reviewed' ? `<button type="button" class="admin-action-btn" onclick="updateStatus('${fb.id}', 'Reviewed')">Review</button>` : ''}
+                                    ${fb.status !== 'Resolved' ? `<button type="button" class="admin-action-btn" onclick="updateStatus('${fb.id}', 'Resolved')">Resolve</button>` : ''}
+                                    <button type="button" class="admin-action-btn btn-delete" onclick="deleteEntry('${fb.id}')" title="Delete">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            function escapeHtml(str) {
+                return String(str || '').replace(/[&<>'"]/g, 
+                    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+                );
+            }
+
+            // Expose actions to global scope for button onclick
+            window.updateStatus = async function(id, newStatus) {
+                const tok = getToken();
+                try {
+                    const res = await fetch('/api/admin/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${tok}`
+                        },
+                        body: JSON.stringify({ action: 'update_status', id, status: newStatus })
+                    });
+                    const d = await res.json();
+                    if (d.success) {
+                        const target = allFeedbacks.find(f => f.id === id);
+                        if (target) target.status = newStatus;
+                        renderTable();
+                        updateStats({});
+                    } else {
+                        alert(d.message || 'Failed to update status');
+                    }
+                } catch (err) {
+                    alert('Network error: ' + err.message);
+                }
+            };
+
+            window.deleteEntry = async function(id) {
+                if (!confirm('Are you sure you want to permanently delete this feedback entry?')) return;
+                const tok = getToken();
+                try {
+                    const res = await fetch('/api/admin/feedback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${tok}`
+                        },
+                        body: JSON.stringify({ action: 'delete', id })
+                    });
+                    const d = await res.json();
+                    if (d.success) {
+                        allFeedbacks = allFeedbacks.filter(f => f.id !== id);
+                        renderTable();
+                        updateStats({});
+                    } else {
+                        alert(d.message || 'Failed to delete');
+                    }
+                } catch (err) {
+                    alert('Network error: ' + err.message);
+                }
+            };
+
+            // Event Listeners
+            statusTabs.addEventListener('click', (e) => {
+                const btn = e.target.closest('.admin-tab-btn');
+                if (!btn) return;
+                statusTabs.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentStatus = btn.getAttribute('data-status');
+                renderTable();
+            });
+
+            categorySelect.addEventListener('change', () => {
+                currentCategory = categorySelect.value;
+                renderTable();
+            });
+
+            searchInput.addEventListener('input', () => {
+                currentSearch = searchInput.value;
+                renderTable();
+            });
+
+            // Init
+            checkAuth();
+        })();
+    </script>
+</body>
+</html>
