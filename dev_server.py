@@ -49,9 +49,35 @@ class ToolseraHandler(http.server.SimpleHTTPRequestHandler):
 
         return super().do_GET()
 
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With')
+        self.end_headers()
+
     def do_POST(self):
         if self.path == '/api/extract.php':
-            self.handle_extract_api()
+            try:
+                from api.extract import handler as ExtractHandler
+                h = ExtractHandler.__new__(ExtractHandler)
+                h.request = self.request
+                h.client_address = self.client_address
+                h.server = self.server
+                h.rfile = self.rfile
+                h.wfile = self.wfile
+                h.headers = self.headers
+                h.path = self.path
+                h.command = 'POST'
+                h.request_version = self.request_version
+                h.requestline = f'{self.command} {self.path} {self.request_version}'
+                h.close_connection = self.close_connection
+                h.do_POST()
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'success': False, 'message': str(e)}).encode('utf-8'))
             return
 
         self.send_response(404)

@@ -83,27 +83,27 @@
                 </div>
 
                 <h1 class="hero-title">
-                    Download Instagram <br>
-                    <span class="brand-purple-text">Reels, Videos & Audio</span>
+                    Instagram Downloader & <br>
+                    <span class="brand-purple-text">Anonymous Story & DP Viewer</span>
                 </h1>
 
                 <p class="hero-subtitle">
-                    Fast, clean, and direct. Paste any public Instagram link below to save your video in high definition without watermarks.
+                    Fast, clean, and 100% private. Download Instagram Reels & Videos, watch active stories without being seen, and zoom profile pictures in full 1080p HD.
                 </p>
 
                 <!-- Format Selection Tabs -->
                 <div class="format-tabs" role="tablist">
-                    <button class="tab-btn active" data-type="video" role="tab">
+                    <button class="tab-btn active" data-type="video" role="tab" id="tabVideo">
                         <svg viewBox="0 0 24 24"><path d="M4 6H20V18H4zM2 4v16h20V4z"/></svg>
                         <span>Video / Reels</span>
                     </button>
-                    <button class="tab-btn" data-type="reel" role="tab">
-                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-                        <span>Reels</span>
+                    <button class="tab-btn" data-type="story" role="tab" id="tabStory">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span>Story Viewer</span>
                     </button>
-                    <button class="tab-btn" data-type="audio" role="tab">
-                        <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-                        <span>Audio (MP3)</span>
+                    <button class="tab-btn" data-type="dp" role="tab" id="tabDp">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21a8.38 8.38 0 0 1 13 0"></path></svg>
+                        <span>Full HD DP</span>
                     </button>
                 </div>
 
@@ -227,6 +227,92 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Result Profile DP Card -->
+                        <div id="dpCard" class="media-card dp-card" style="display: none;">
+                            <div class="dp-grid">
+                                <div class="dp-avatar-wrap">
+                                    <img id="dpImg" src="" alt="Profile Picture" class="dp-avatar-img" referrerpolicy="no-referrer">
+                                    <div class="dp-badge">1080p HD</div>
+                                </div>
+                                <div class="dp-meta">
+                                    <div class="media-author">
+                                        <span id="dpUsernameText">@username</span>
+                                        <span id="dpAccountBadge" class="media-author-badge">Public Profile</span>
+                                    </div>
+                                    <p id="dpTitleText" class="media-caption">Full HD Uncompressed Profile Picture</p>
+                                    <div class="download-actions">
+                                        <a href="#" id="downloadDpBtn" class="btn-download-primary" download="toolsera_profile_pic.jpg">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            <span>Download HD Profile Picture (1080p)</span>
+                                        </a>
+                                        <div class="action-row">
+                                            <a href="#" id="viewFullDpBtn" class="btn-action-secondary" target="_blank" rel="noopener noreferrer">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <circle cx="11" cy="11" r="8"></circle>
+                                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                                </svg>
+                                                <span>Open Full HD Image</span>
+                                            </a>
+                                            <button type="button" id="copyDpLinkBtn" class="btn-action-secondary">
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                                </svg>
+                                                <span>Copy Link</span>
+                                            </button>
+                                        </div>
+                                        <div class="reset-action">
+                                            <button type="button" class="btn-reset reset-trigger">Check another profile</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Result Stories Card -->
+                        <div id="storyCard" class="media-card story-card" style="display: none;">
+                            <div class="story-header-wrap">
+                                <div class="story-user-meta">
+                                    <span id="storyUsernameText">@username</span>
+                                    <span id="storyCountBadge" class="media-author-badge">Active Stories</span>
+                                </div>
+                                <p class="story-subtext">Viewed 100% Anonymously • No Seen Receipt</p>
+                            </div>
+                            <div id="storyItemsContainer" class="story-items-grid">
+                                <!-- Dynamic story cards inserted via app.js -->
+                            </div>
+                            <div class="reset-action" style="margin-top: 24px;">
+                                <button type="button" class="btn-reset reset-trigger">Search another story</button>
+                            </div>
+                        </div>
+
+                        <!-- Private Account Notice Card -->
+                        <div id="privateAlertCard" class="media-card alert-card" style="display: none;">
+                            <div class="alert-box">
+                                <div class="alert-icon-wrap">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </div>
+                                <h3 id="alertTitle" class="alert-title">Private Instagram Account</h3>
+                                <p id="alertMessage" class="alert-desc">
+                                    This account is private. Instagram only displays stories to approved followers. However, you can still view and download their <strong>Full HD Profile Picture (DP)</strong>!
+                                </p>
+                                <button type="button" id="alertViewDpBtn" class="btn-download-primary" style="margin-top: 16px; width: auto; display: inline-flex; padding: 12px 24px;">
+                                    <span>View Full HD DP</span>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>

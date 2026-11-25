@@ -1608,3 +1608,200 @@ body.splash-active {
     padding: 18px 14px;
   }
 }
+
+/* ==========================================================================
+   TOOLSERA - PROFILE DP, STORIES & ALERT CARDS
+   ========================================================================== */
+
+/* Profile DP Card */
+.dp-card .dp-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.dp-avatar-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(89, 56, 232, 0.15);
+  border: 4px solid #FFFFFF;
+  margin: 0 auto;
+}
+
+.dp-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.dp-avatar-wrap:hover .dp-avatar-img {
+  transform: scale(1.05);
+}
+
+.dp-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--brand-purple);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Stories Card & Grid */
+.story-header-wrap {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.story-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.story-subtext {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.story-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.story-item-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.story-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.story-media-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9/16;
+  background: #11121B;
+  overflow: hidden;
+}
+
+.story-preview-img,
+.story-preview-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.story-type-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(17, 18, 27, 0.75);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.story-card-actions {
+  padding: 10px;
+}
+
+.btn-story-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  background: var(--brand-purple);
+  color: #FFFFFF;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+
+.btn-story-download:hover {
+  background: var(--brand-purple-hover);
+}
+
+/* Alert Card for Private Accounts */
+.alert-card {
+  background: #FFF9F5;
+  border: 1px solid #FFE4D6;
+}
+
+.alert-box {
+  text-align: center;
+  padding: 10px 16px;
+}
+
+.alert-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #FFECE2;
+  color: #E65100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.alert-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #11121B;
+  margin-bottom: 8px;
+}
+
+.alert-desc {
+  font-size: 14px;
+  color: #555770;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .dp-card .dp-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 18px;
+  }
+  .dp-meta .media-author {
+    justify-content: center;
+  }
+  .story-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
