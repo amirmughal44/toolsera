@@ -208,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Tab Switcher
+        const heroDynamicTitle = document.getElementById('heroDynamicTitle');
         formatTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 formatTabs.forEach(t => t.classList.remove('active'));
@@ -220,26 +221,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                     urlInput.placeholder = 'Enter Instagram @username (e.g. @cristiano) to view stories...';
                     submitBtn.querySelector('span').textContent = 'View Stories Anonymously';
+                    if (heroDynamicTitle) heroDynamicTitle.innerHTML = 'Anonymous <span class="brand-purple-text">Instagram Story</span> Viewer';
                 } else if (currentMode === 'post') {
                     if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                     urlInput.placeholder = 'Paste Instagram Post URL or enter @username to view posts...';
-                    submitBtn.querySelector('span').textContent = 'View Instagram Posts';
+                    submitBtn.querySelector('span').textContent = 'Download Photo / Post';
+                    if (heroDynamicTitle) heroDynamicTitle.innerHTML = 'Download Instagram <span class="brand-purple-text">Photos &amp; Posts</span> in High-Res';
                 } else if (currentMode === 'profile') {
                     if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                     urlInput.placeholder = 'Enter Instagram @username (e.g. @cristiano) to inspect profile...';
                     submitBtn.querySelector('span').textContent = 'Inspect Instagram Profile';
+                    if (heroDynamicTitle) heroDynamicTitle.innerHTML = 'Instagram <span class="brand-purple-text">Profile Inspector</span> &amp; Downloader';
                 } else if (currentMode === 'dp') {
                     if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                     urlInput.placeholder = 'Enter Instagram @username (e.g. @cristiano) to view 1080p DP...';
                     submitBtn.querySelector('span').textContent = 'View Full HD DP';
+                    if (heroDynamicTitle) heroDynamicTitle.innerHTML = 'Instagram <span class="brand-purple-text">Full HD DP</span> Zoomer &amp; Saver';
                 } else if (currentMode === 'hashtag') {
                     if (hashtagPillsBar) hashtagPillsBar.style.display = 'flex';
                     urlInput.placeholder = 'Enter keyword or topic for hashtags (e.g. reels, fitness)...';
                     submitBtn.querySelector('span').textContent = 'Generate 30 Hashtags';
+                    if (heroDynamicTitle) heroDynamicTitle.innerHTML = 'Instagram <span class="brand-purple-text">Viral AI Hashtag</span> Generator';
                 } else {
                     if (hashtagPillsBar) hashtagPillsBar.style.display = 'none';
                     urlInput.placeholder = 'Paste Instagram Reel link or Video URL (e.g. instagram.com/reel/...)...';
                     submitBtn.querySelector('span').textContent = 'Download Instagram Reel / Video';
+                    if (heroDynamicTitle) heroDynamicTitle.innerHTML = 'Download Instagram <span class="brand-purple-text">Reels &amp; Videos</span> in 1080p HD';
                 }
                 urlInput.focus();
             });
