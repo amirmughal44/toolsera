@@ -26,7 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. MOBILE MENU & ACCESSIBILITY CONTROLLER
+    // 2. STICKY HEADER SCROLL ELEVATION & MOBILE NAVIGATION CONTROLLER
+    const siteHeader = document.querySelector('.site-header');
+    if (siteHeader) {
+        const handleHeaderScroll = () => {
+            if (window.scrollY > 12) {
+                siteHeader.classList.add('header-scrolled');
+            } else {
+                siteHeader.classList.remove('header-scrolled');
+            }
+        };
+        window.addEventListener('scroll', handleHeaderScroll, { passive: true });
+        handleHeaderScroll();
+    }
+
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileDrawer = document.getElementById('mobileDrawer');
     const drawerBackdrop = document.getElementById('drawerBackdrop');
@@ -83,6 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobileMenuBtn.focus();
             }
         });
+
+        // Close drawer if viewport is resized to desktop width (> 1024px)
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024 && mobileDrawer.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }, { passive: true });
     }
 
     if (drawerBackdrop) {
