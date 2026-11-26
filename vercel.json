@@ -3,6 +3,7 @@
   "rewrites": [
     { "source": "/api/extract.php", "destination": "/api/extract" },
     { "source": "/api/feedback.php", "destination": "/api/feedback" },
+    { "source": "/api/admin/feedback", "destination": "/api/feedback" },
     { "source": "/api/download.php", "destination": "/api/download" },
     { "source": "/api/image_proxy.php", "destination": "/api/image_proxy" },
     { "source": "/story-viewer", "destination": "/story-viewer.html" },
@@ -18,6 +19,8 @@
     { "source": "/index.php", "destination": "/index.html" },
     { "source": "/about", "destination": "/about.html" },
     { "source": "/contact", "destination": "/contact.html" },
-    { "source": "/disclaimer", "destination": "/disclaimer.html" }
+    { "source": "/disclaimer", "destination": "/disclaimer.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" }
   ]
 }

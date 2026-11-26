@@ -1,0 +1,7 @@
+api/*.php
+*.php
+includes/
+scratch/
+dev_server.py
+toolsera_live.zip
+.htaccess

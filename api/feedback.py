@@ -9,22 +9,37 @@ from email.mime.multipart import MIMEMultipart
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
 FEEDBACK_FILE = os.path.join(DATA_DIR, 'feedbacks.json')
+TMP_FEEDBACK_FILE = '/tmp/toolsera_feedbacks.json'
 ADMIN_TOKEN = "toolsera_admin_2026"
 OWNER_EMAIL = "adeelahmed3376@gmail.com"
 
 def get_feedbacks():
-    if not os.path.exists(FEEDBACK_FILE):
-        return []
-    try:
-        with open(FEEDBACK_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
-        return []
+    # On read-only serverless environments (Vercel), prefer /tmp copy if written
+    for path in (TMP_FEEDBACK_FILE, FEEDBACK_FILE):
+        if os.path.exists(path):
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, list):
+                        return data
+            except Exception:
+                pass
+    return []
 
 def save_feedbacks(feedbacks):
-    os.makedirs(DATA_DIR, exist_ok=True)
-    with open(FEEDBACK_FILE, 'w', encoding='utf-8') as f:
-        json.dump(feedbacks, f, indent=2, ensure_ascii=False)
+    # Try local/writable repo data directory first, fall back to /tmp on Vercel
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(FEEDBACK_FILE, 'w', encoding='utf-8') as f:
+            json.dump(feedbacks, f, indent=2, ensure_ascii=False)
+        return
+    except OSError:
+        pass
+    try:
+        with open(TMP_FEEDBACK_FILE, 'w', encoding='utf-8') as f:
+            json.dump(feedbacks, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
 
 def dispatch_email_notification(entry):
     """
@@ -115,8 +130,8 @@ class handler(BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
-        # Admin feedback list endpoint
-        if self.path.startswith('/api/admin/feedback') or '/api/feedback?admin=1' in self.path:
+        # Admin feedback list endpoint (also matches Vercel rewritten /api/feedback path)
+        if self.path.startswith('/api/admin/feedback') or '/api/feedback' in self.path:
             if not self.check_admin_auth():
                 self.send_json(401, {'success': False, 'message': 'Unauthorized. Admin access required.'})
                 return
@@ -152,7 +167,7 @@ class handler(BaseHTTPRequestHandler):
             payload = {}
 
         # Handle Admin status update / delete actions
-        if self.path.startswith('/api/admin/feedback'):
+        if self.path.startswith('/api/admin/feedback') or payload.get('action') in ('update_status', 'delete'):
             if not self.check_admin_auth():
                 self.send_json(401, {'success': False, 'message': 'Unauthorized. Admin access required.'})
                 return
